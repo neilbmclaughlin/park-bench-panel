@@ -8,4 +8,4 @@ awk 'BEGIN {
   print "  </ModulePrefs>"
   print "  <Content type=\"html\"><![CDATA[ "}
     { print $0 }
-END {print "]]></Module>"}' park-bench-panel.html
+END {print "]]></Module>"}'  park-bench-panel.html >  park-bench-panel.xml
