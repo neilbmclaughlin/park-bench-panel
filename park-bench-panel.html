@@ -1,62 +1,40 @@
 <html>
 
 <head>
-  <link rel="stylesheet" type="text/css" href="simpleHangoutApp.css">
+  <link rel="stylesheet" type="text/css" href="https://github.com/neilbmclaughlin/park-bench-panel/raw/master/park-bench-panel.css">
+  <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.0/themes/base/jquery-ui.css" />
+  <script src="https://hangoutsapi.talkgadget.google.com/hangouts/api/hangout.js?v=1.0" ></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+  <script src="https://github.com/neilbmclaughlin/park-bench-panel/raw/master/park-bench-panel.js?v=1.0"></script>
 </head>
 <body>
 
-<script src="https://hangoutsapi.talkgadget.google.com/hangouts/api/hangout.js?v=1.0" ></script>
 
 
-<h3>Simple Hangout App -HG Commit Test</h3>
+<h3>Park Bench Panel</h3>
 
 <p>
-<input class="button" type="button" value="Show participants!" id="showParticipants" 
-    style="visibility:hidden;"
-    onClick="showParticipants()"/>
+  <input class="button" type="button" value="Show participants!" id="showParticipants" 
+      style="visibility:hidden;"
+      onClick="showParticipants()"/>
 </p>
 
-<div id="participantsDiv"></div>
+<div id="participants">
+  <h1 class="ui-widget-header">Listeners</h1>
+  <ul id="participantList">
+    <li class="listenerPlaceholder">Listeners here</li>
+  </ul>
+</div>
 
-<hr>
+<div id="speakers">
+    <h1 class="ui-widget-header">Speakers</h1>
+    <div class="ui-widget-content">
+        <ul id="speakerList">
+            <li class="speakerPlaceholder">Drag speaker here</li>
+        </ul>
+    </div>
+</div>
 
-<p><a href="http://developers.google.com/+/hangouts/getting-started">Read the docs</a> to learn more about developing hangouts!</a></p>
-
-<script>
-function showParticipants() {
-  var participants = gapi.hangout.getParticipants();
-
-  var retVal = '<p>Participants: </p><ul>';
-
-  for (var index in participants) {
-    var participant = participants[index];
-
-    if (!participant.person) {
-      retVal += '<li>A participant not running this app</li>';
-    }
-    retVal += '<li>' + participant.person.displayName + '</li>';
-  }
-
-  retVal += '</ul>';
-
-  var div = document.getElementById('participantsDiv');
-
-  div.innerHTML = retVal;
-}
-
-function init() {
-  // When API is ready...                                                         
-  gapi.hangout.onApiReady.add(
-      function(eventObj) {
-        if (eventObj.isApiReady) {
-          document.getElementById('showParticipants')
-            .style.visibility = 'visible';
-        }
-      });
-}
-
-// Wait for gadget to load.                                                       
-gadgets.util.registerOnLoadHandler(init);
-</script>
 </body>
 </html>
