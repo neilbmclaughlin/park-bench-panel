@@ -6,6 +6,10 @@ awk 'BEGIN {
   print "    <Require feature=\"views\" />"
   print "    <Require feature=\"locked-domain\" />"
   print "  </ModulePrefs>"
-  print "  <Content type=\"html\"><![CDATA[ "}
+  print "  <Content type=\"html\">"
+  print "    <![CDATA[ "}
     { print $0 }
-END {print "]]></Module>"}'  park-bench-panel.html >  park-bench-panel.xml
+END {
+  print "    ]]>"
+  print "  </Content>"
+  print "</Module>" }' park-bench-panel.html >  park-bench-panel.xml
