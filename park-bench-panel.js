@@ -23,11 +23,11 @@ function showParticipants() {
 }
 
 $(document).ready(function() {
-       if(gapi.hangout.isApiReady()){ 
-            console.log("Yes it was ready. We can start."); 
-            showParticipants();
-        } else { 
-            console.log("No - not read yet. We have to listen."); 
-            gapi.hangout.onApiRead.add(showParticipants());
-        }
+   if(gapi.hangout.isApiReady()){ 
+        console.log("Yes it was ready. We can start."); 
+        showParticipants();
+    } else { 
+        console.log("No - not read yet. We have to listen."); 
+        gapi.hangout.onApiRead.add(showParticipants());
+    }
 });
