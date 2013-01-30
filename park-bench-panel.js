@@ -1,11 +1,7 @@
 function showParticipants() {
-    var items = [];
     var participants = getParticipants();
 
-    $(participants).each(function(index, Element) {
-        items.push($('<li/>').text(Element.person.displayName));
-    });
-    $('#participantList').append.apply($('#participantList'), items);
+    buildParticipantList(participants)
 
 //    $("#participantList li").draggable({
 //        appendTo: "body",
@@ -20,6 +16,20 @@ function showParticipants() {
 //            $("<li></li>").text(ui.draggable.text()).appendTo(this);
 //        }
 //    });
+}
+
+function aMethod() {
+    return "boo";
+}
+
+function buildParticipantList(participants) {
+    var items = [];
+
+    $(participants).each(function(index, Element) {
+        items.push($('<li/>').text(Element.person.displayName));
+    });
+    $('#participantList').append.apply($('#participantList'), items);
+
 }
 
 function getParticipants() {
