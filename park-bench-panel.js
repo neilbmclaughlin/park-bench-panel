@@ -27,14 +27,20 @@ function getParticipants() {
     
 }
 
+function getLocalParticipantName() {
+    return gapi.hangout.getLocalParticipant().person.displayName;
+    
+}
+
+
 function startTalk() {
-    var speaker = getLocalParticipant().person.displayName;
+    var speaker = getLocalParticipantName();
     $('#speakerList').append.apply($('#speakerList'), speaker);
     alert(speaker);
 }
 
 function stopTalk() {
-    var speaker = getLocalParticipant().person.displayName;
+    var speaker = getLocalParticipantName();
     $('#participantList').append.apply($('#participantList'), speaker);
     alert(speaker);
 }
