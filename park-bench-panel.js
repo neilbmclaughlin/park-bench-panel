@@ -32,6 +32,6 @@ $(document).ready(function() {
         showParticipants();
     } else { 
         console.log("No - not read yet. We have to listen."); 
-        gapi.hangout.onApiReady.add(showParticipants());
+        gapi.hangout.onApiReady.add(showParticipants;
     }
 });
