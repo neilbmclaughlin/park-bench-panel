@@ -1,25 +1,29 @@
 function showParticipants() {
     var items = [];
-    var participants = gapi.hangout.getParticipants();
+    var participants = getParticipants();
 
     $(participants).each(function(index, Element) {
         items.push($('<li/>').text(Element.person.displayName));
     });
     $('#participantList').append.apply($('#participantList'), items);
 
-    $("#participantList li").draggable({
-        appendTo: "body",
-        helper: "clone"
-    });
+//    $("#participantList li").draggable({
+//        appendTo: "body",
+//        helper: "clone"
+//    });
+//
+//    $("#speakerList").droppable({
+//        activeClass: "ui-state-default",
+//        hoverClass: "ui-state-hover",
+//        drop: function(event, ui) {
+//            $(this).find(".speakerPlaceholder").remove();
+//            $("<li></li>").text(ui.draggable.text()).appendTo(this);
+//        }
+//    });
+}
 
-    $("#speakerList").droppable({
-        activeClass: "ui-state-default",
-        hoverClass: "ui-state-hover",
-        drop: function(event, ui) {
-            $(this).find(".speakerPlaceholder").remove();
-            $("<li></li>").text(ui.draggable.text()).appendTo(this);
-        }
-    });
+function getParticipants() {
+    return gapi.hangout.getParticipants();
 }
 
 $(document).ready(function() {
