@@ -5,6 +5,7 @@ Links
 * [Github repo](https://github.com/neilbmclaughlin/park-bench-panel)
 * [Cloud 9 Project](http://c9.io/neilbmclaughlin/park-bench-panel)
 * [Demo app walkthrough](http://life.scarygami.net/hangoutapps/)
+* [Run qUnit tests from github](http://htmlpreview.github.com/?https://raw.github.com/neilbmclaughlin/park-bench-panel/master/park-bench-panel-tests.html)
  
 Notes
 =====
