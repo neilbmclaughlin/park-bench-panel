@@ -28,10 +28,8 @@ function getParticipants() {
 }
 
 function getLocalParticipantName() {
-    return gapi.hangout.getLocalParticipant().person.displayName;
-    
+    return gapi.hangout.getLocalParticipant().person.displayName;    
 }
-
 
 function startTalk() {
     var speaker = getLocalParticipantName();
