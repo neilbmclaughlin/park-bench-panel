@@ -24,7 +24,21 @@ function showParticipants() {
 
 function getParticipants() {
     return gapi.hangout.getParticipants();
+    
 }
+
+function startTalk() {
+    var speaker = getLocalParticipant().person.displayName;
+    $('#speakerList').append.apply($('#speakerList'), speaker);
+    alert(speaker);
+}
+
+function stopTalk() {
+    var speaker = getLocalParticipant().person.displayName;
+    $('#participantList').append.apply($('#participantList'), speaker);
+    alert(speaker);
+}
+
 
 $(document).ready(function() {
    if(gapi.hangout.isApiReady()){ 
