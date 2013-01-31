@@ -11,5 +11,5 @@ function addOnApiReadyCallback(f) {
 }
 
 function getLocalParticipant() {
-    return gapi.hangout.getLocalParticipant().person;    
+    return gapi.hangout.getLocalParticipant();    
 }
