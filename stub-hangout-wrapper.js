@@ -1,5 +1,4 @@
 function getParticipants() {
-    
 }
 
 function isHangoutApiReady() {
@@ -7,5 +6,13 @@ function isHangoutApiReady() {
 }
 
 function addOnApiReadyCallback(f) {
+}
 
+function getLocalParticipant() {
+    return { 
+            person : { 
+                displayName : 'Bob',
+                age : 21
+            } 
+        };
 }

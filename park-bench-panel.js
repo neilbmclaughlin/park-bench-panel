@@ -1,7 +1,7 @@
 function showParticipants() {
     var participants = getParticipants();
 
-    buildParticipantList(participants)
+    buildParticipantList(participants);
 
 //    $("#participantList li").draggable({
 //        appendTo: "body",
@@ -24,30 +24,23 @@ function buildParticipantList(participants) {
     $(participants).each(function(index, Element) {
         items.push($('<li/>').text(Element.person.displayName));
     });
-    $('#participantList').append.apply($('#participantList'), items);
+    $('#participantList').append(items);
 
 }
 
+function startTalk(participant) {
+    //var speaker = getLocalParticipant();
+    $('#participantList li:contains("' + participant.person.displayName +'")').remove();
+    $('#speakerList').append($('<li/>').text(participant.person.displayName));
+}
+
+function stopTalk(participant) {
+    //var speaker = getLocalParticipant();
+    $('#speakerList li:contains("' + participant.person.displayName +'")').remove();
+    $('#participantList').append($('<li/>').text(participant.person.displayName));
+}
 
 
-//
-//function getLocalParticipantName() {
-//    return gapi.hangout.getLocalParticipant().person.displayName;    
-//}
-//
-//function startTalk() {
-//    var speaker = getLocalParticipantName();
-//    $('#speakerList').append.apply($('#speakerList'), speaker);
-//    alert(speaker);
-//}
-//
-//function stopTalk() {
-//    var speaker = getLocalParticipantName();
-//    $('#participantList').append.apply($('#participantList'), speaker);
-//    alert(speaker);
-//}
-//
-//
 $(document).ready(function() {
    if(isHangoutApiReady()){ 
         console.log("Yes it was ready. We can start."); 

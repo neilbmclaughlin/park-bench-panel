@@ -9,3 +9,7 @@ function isHangoutApiReady() {
 function addOnApiReadyCallback(f) {
     gapi.hangout.onApiReady.add(f);
 }
+
+function getLocalParticipant() {
+    return gapi.hangout.getLocalParticipant().person;    
+}
