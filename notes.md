@@ -10,7 +10,7 @@ Tests
 =====
 
 * [Run qUnit dev tests from github](http://htmlpreview.github.com/?https://raw.github.com/neilbmclaughlin/park-bench-panel/master/park-bench-panel-tests-dev.html)
-* [Run qUnit int tests from github](http://htmlpreview.github.com/?https://raw.github.com/neilbmclaughlin/park-bench-panel/master/park-bench-panel-tests=int.html)
+* [Run qUnit int tests from github](http://htmlpreview.github.com/?https://raw.github.com/neilbmclaughlin/park-bench-panel/master/park-bench-panel-tests-int.html)
  
 Notes
 =====
