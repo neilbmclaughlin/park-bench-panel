@@ -18,10 +18,6 @@ function showParticipants() {
 //    });
 }
 
-function aMethod() {
-    return "boo";
-}
-
 function buildParticipantList(participants) {
     var items = [];
 
@@ -32,34 +28,32 @@ function buildParticipantList(participants) {
 
 }
 
-function getParticipants() {
-    return gapi.hangout.getParticipants();
-    
-}
-
-function getLocalParticipantName() {
-    return gapi.hangout.getLocalParticipant().person.displayName;    
-}
-
-function startTalk() {
-    var speaker = getLocalParticipantName();
-    $('#speakerList').append.apply($('#speakerList'), speaker);
-    alert(speaker);
-}
-
-function stopTalk() {
-    var speaker = getLocalParticipantName();
-    $('#participantList').append.apply($('#participantList'), speaker);
-    alert(speaker);
-}
 
 
+//
+//function getLocalParticipantName() {
+//    return gapi.hangout.getLocalParticipant().person.displayName;    
+//}
+//
+//function startTalk() {
+//    var speaker = getLocalParticipantName();
+//    $('#speakerList').append.apply($('#speakerList'), speaker);
+//    alert(speaker);
+//}
+//
+//function stopTalk() {
+//    var speaker = getLocalParticipantName();
+//    $('#participantList').append.apply($('#participantList'), speaker);
+//    alert(speaker);
+//}
+//
+//
 $(document).ready(function() {
-   if(gapi.hangout.isApiReady()){ 
+   if(isHangoutApiReady()){ 
         console.log("Yes it was ready. We can start."); 
         showParticipants();
     } else { 
         console.log("No - not read yet. We have to listen."); 
-        gapi.hangout.onApiReady.add(showParticipants);
+        addOnApiReadyCallback(showParticipants);
     }
 });
