@@ -19,13 +19,9 @@ function showParticipants() {
 }
 
 function buildParticipantList(participants) {
-    var items = [];
-
     $(participants).each(function(index, Element) {
-        items.push($('<li/>').text(Element.person.displayName));
+        $('#participantList').append($('<li/>').text(Element.person.displayName));
     });
-    $('#participantList').append(items);
-
 }
 
 function startTalk(participant) {
