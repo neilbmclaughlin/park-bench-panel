@@ -20,7 +20,7 @@ function showParticipants() {
 
 function buildParticipantList(participants) {
     $(participants).each(function(index, Element) {
-        //$('#participantList').append($('<li/>').text(Element.person.displayName));
+        $('#participantList').append($('<li/>').text(Element.person.displayName));
     });
 }
 
