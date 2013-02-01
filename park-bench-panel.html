@@ -1,5 +1,7 @@
 <html>
 
+    <!--  Note must use full closing tags. google app parser will not parse html correctly without them-->
+    
     <head>
       <link rel="stylesheet" type="text/css" href="https://github.com/neilbmclaughlin/park-bench-panel/raw/master/park-bench-panel.css"></link>
       <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.0/themes/sunny/jquery-ui.css"></link>
@@ -24,8 +26,10 @@
             <ul id="speakerList"></ul>
         </div>
 
-        <input class="button" type="button" value="I want to talk" id="btnStartTalk" onClick="startTalk(getLocalParticipant())"></input>
-        <input class="button" type="button" value="I'm done talking" id="btnStopTalk" onClick="stopTalk(getLocalParticipant())"></input>
+        <div id="buttons">
+            <input class="button" type="button" value="I want to talk" id="btnStartTalk" onClick="startTalk(getLocalParticipant())"></input>
+            <input class="button" type="button" value="I'm done talking" id="btnStopTalk" onClick="stopTalk(getLocalParticipant())"></input>            
+        </div>
 
     </body>
 
