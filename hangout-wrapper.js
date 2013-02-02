@@ -15,5 +15,5 @@ function getLocalParticipant() {
 }
 
 function addOnNewParticipantCallback(f) {
-    return gapi.hangout.addOnNewParticipantCallback(f);   
+    return gapi.hangout.onParticipantsAdded.add(f);   
 }
