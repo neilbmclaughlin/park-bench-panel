@@ -23,4 +23,4 @@ Notes
 =====
 
 * Needed to create a symbolic link to pre-comit script (eg ln -s ~/373312/pre-commit.sh .git/hooks/pre-commit) 
-* Hangout xml parser seems to need closing tags for html elements (ie <script></script> rather than <script ... />)
+* Hangout xml parser seems to need closing tags for html elements (ie `<script></script>` rather than `<script ... />`)
