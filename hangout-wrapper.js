@@ -13,3 +13,7 @@ function addOnApiReadyCallback(f) {
 function getLocalParticipant() {
     return gapi.hangout.getLocalParticipant();    
 }
+
+function addOnNewParticipantCallback(f) {
+    return gapi.hangout.addOnNewParticipantCallback(f);   
+}

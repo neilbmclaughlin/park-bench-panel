@@ -2,6 +2,8 @@ function showParticipants() {
     var participants = getParticipants();
 
     buildParticipantList(participants);
+    
+    addOnNewParticipantCallback(newParticipantJoined);
 
 //    $("#participantList li").draggable({
 //        appendTo: "body",
@@ -34,6 +36,13 @@ function stopTalk(participant) {
     //var speaker = getLocalParticipant();
     $('#speakerList li:contains("' + participant.person.displayName +'")').remove();
     $('#participantList').append($('<li/>').text(participant.person.displayName));
+}
+
+function newParticipantJoined(participantAddedEvent)
+{
+    $(participantAddedEvent.addedParticipants).each(function(index, Element) {
+        $('#participantList').append($('<li/>').text(Element.person.displayName));
+    });
 }
 
 

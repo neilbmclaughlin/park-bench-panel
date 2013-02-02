@@ -1,12 +1,10 @@
-function getParticipants() {
-}
+function getParticipants() { }
 
-function isHangoutApiReady() {
-    return true;    
-}
+function isHangoutApiReady() { return true; }
 
-function addOnApiReadyCallback(f) {
-}
+function addOnApiReadyCallback(f) { }
+
+function addOnNewParticipantCallback(f) { }
 
 function getLocalParticipant() {
     return { 
