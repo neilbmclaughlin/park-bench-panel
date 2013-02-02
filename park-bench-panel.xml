@@ -23,28 +23,29 @@
     </head>
 
     <body>
+        <div style="width : 50%">
     
-        <h1 class="ui-widget-header">Park Bench Panel</h1>
-                
-        <div id="participants" style="width : 50%">
-            <h3 class="ui-widget-header">Listeners</h3>
-            <div class="ui-widget-content">
-                <ul id="participantList"></ul>
+            <h1 class="ui-widget-header ui-corner-all">Park Bench Panel</h1>
+                    
+            <div id="participants">
+                <h3 class="ui-widget-header ui-corner-all">Listeners</h3>
+                <div class="ui-widget-content  ui-corner-all">
+                    <ul id="participantList"></ul>
+                </div>
             </div>
-        </div>
-        
-        <div id="speakers"  style="width : 50%">
-            <h3 class="ui-widget-header">Speakers</h3>
-            <div class="ui-widget-content">
-                <ul id="speakerList">
-                    <li>No speakers</li>
-                </ul>
+            
+            <div id="speakers">
+                <h3 class="ui-widget-header ui-corner-all">Speakers</h3>
+                <div class="ui-widget-content ui-corner-all">
+                    <ul id="speakerList"></ul>
+                </div>
             </div>
-        </div>
-                
-        <div id="buttons"  class="ui-widget-content" style="width : 50%">
-            <input class="button" type="button" value="I want to talk" id="btnStartTalk" onClick="startTalk(getLocalParticipant())"></input>
-            <input class="button" type="button" value="I'm done talking" id="btnStopTalk" onClick="stopTalk(getLocalParticipant())"></input>            
+                    
+            <div id="buttons">
+                <input class="button" type="button" value="I want to talk" id="btnStartTalk" onClick="startTalk(getLocalParticipant())"></input>
+                <input class="button" type="button" value="I'm done talking" id="btnStopTalk" onClick="stopTalk(getLocalParticipant())"></input>            
+            </div>
+            
         </div>
 
     </body>
