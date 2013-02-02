@@ -22,5 +22,6 @@ Tests
 Notes
 =====
 
+* Running the script generate.xml will create an xml file suitable for use as a google hangout app definition. This is run from a pre-commit hook (see below).
 * Needed to create a symbolic link to pre-comit script (eg ln -s ~/373312/pre-commit.sh .git/hooks/pre-commit) 
 * Hangout xml parser seems to need closing tags for html elements (ie `<script></script>` rather than `<script ... />`)
