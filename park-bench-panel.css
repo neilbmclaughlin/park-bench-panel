@@ -14,7 +14,10 @@
 #draggable { width: 150px; height: 150px; padding: 0.5em; }
 
 h1 { padding: .2em; margin: 0; }
+
+/* style the list to maximize the droppable hitarea */
+/*
 #listenerList { float:left; width: 500px; margin-right: 2em; }
 #speakerList { width: 200px; float: left; margin-top: 1em; }
-/* style the list to maximize the droppable hitarea */
 #speakerList ul { margin: 0; padding: 1em 0 1em 3em; }
+*/
