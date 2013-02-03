@@ -87,7 +87,7 @@ test("A request to speak updates the speaker list in state", function() {
 
         
     //assert
-    fail('Not implemented yet');
+    ok( false,  'Not implemented yet');
     
 });
 
