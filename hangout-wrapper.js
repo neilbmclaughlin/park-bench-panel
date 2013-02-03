@@ -3,7 +3,7 @@ function getParticipants() {
     var speakerIds = getStateValue('speakerIds');
     
     $(participants).each(function(index, Element) {
-        Element.isSpeaker = jQuery.inArray(Element.id, speakerIds);
+        Element.isSpeaker = ( jQuery.inArray(Element.id, speakerIds) >= 0 );
     });
 
     return participants;
