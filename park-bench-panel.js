@@ -27,13 +27,11 @@ function buildParticipantList(participants) {
 }
 
 function startTalk(participant) {
-    //var speaker = getLocalParticipant();
     $('#participantList li:contains("' + participant.person.displayName +'")').remove();
     $('#speakerList').append($('<li/>').text(participant.person.displayName));
 }
 
 function stopTalk(participant) {
-    //var speaker = getLocalParticipant();
     $('#speakerList li:contains("' + participant.person.displayName +'")').remove();
     $('#participantList').append($('<li/>').text(participant.person.displayName));
 }
@@ -44,7 +42,6 @@ function newParticipantJoined(participantAddedEvent)
         $('#participantList').append($('<li/>').text(Element.person.displayName));
     });
 }
-
 
 $(document).ready(function() {
    if(isHangoutApiReady()){ 

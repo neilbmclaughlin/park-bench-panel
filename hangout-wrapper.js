@@ -1,5 +1,12 @@
 function getParticipants() {
-    return gapi.hangout.getParticipants();    
+    var participants = gapi.hangout.getParticipants(); 
+    var speakerIds = getStateValue('speakerIds');
+    
+    $(participants).each(function(index, Element) {
+        Element.isSpeaker = jQuery.inArray(Element.id, speakerIds);
+    });
+
+    return participants;
 }
 
 function isHangoutApiReady() {
@@ -16,4 +23,12 @@ function getLocalParticipant() {
 
 function addOnNewParticipantCallback(f) {
     return gapi.hangout.onParticipantsAdded.add(f);   
+}
+
+function getStateValue(key) {
+    gapi.hangout.data.getValue(key);
+}
+
+function setStateValue(key, value) {
+    gapi.hangout.data.setValue(key, value);
 }
