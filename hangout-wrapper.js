@@ -25,6 +25,10 @@ function addOnNewParticipantCallback(f) {
     return gapi.hangout.onParticipantsAdded.add(f);   
 }
 
+function addOnStateChangedCallback(f) {
+    return gapi.hangout.onStateChanged(f);
+}
+
 function setParticipantAsSpeaker(participantId) {
     return gapi.hangout.data.submitDelta( { participantId : 'speaker' } );
 }
