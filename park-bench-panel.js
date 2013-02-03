@@ -1,54 +1,41 @@
 function showParticipants() {
     var participants = getParticipants();
-
-    buildParticipantList(participants);
-    
-    addOnNewParticipantCallback(newParticipantJoined);
-
-//    $("#participantList li").draggable({
-//        appendTo: "body",
-//        helper: "clone"
-//    });
-//
-//    $("#speakerList").droppable({
-//        activeClass: "ui-state-default",
-//        hoverClass: "ui-state-hover",
-//        drop: function(event, ui) {
-//            $(this).find(".speakerPlaceholder").remove();
-//            $("<li></li>").text(ui.draggable.text()).appendTo(this);
-//        }
-//    });
+    buildParticipantLists(participants);
 }
 
-function buildParticipantList(participants) {
+function buildParticipantLists(participants) {
     $(participants).each(function(index, Element) {
-        $('#participantList').append($('<li/>').text(Element.person.displayName));
+        $('#listenerList').append($('<li/>').text(Element.person.displayName));
     });
 }
 
 function startTalk(participant) {
-    $('#participantList li:contains("' + participant.person.displayName +'")').remove();
+    $('#listenerList li:contains("' + participant.person.displayName +'")').remove();
     $('#speakerList').append($('<li/>').text(participant.person.displayName));
 }
 
 function stopTalk(participant) {
     $('#speakerList li:contains("' + participant.person.displayName +'")').remove();
-    $('#participantList').append($('<li/>').text(participant.person.displayName));
+    $('#listenerList').append($('<li/>').text(participant.person.displayName));
 }
 
-function newParticipantJoined(participantAddedEvent)
-{
+function newParticipantJoined(participantAddedEvent) {
     $(participantAddedEvent.addedParticipants).each(function(index, Element) {
-        $('#participantList').append($('<li/>').text(Element.person.displayName));
+        $('#listenerList').append($('<li/>').text(Element.person.displayName));
     });
+}
+
+function init() {
+    showParticipants();
+    addOnNewParticipantCallback(newParticipantJoined);
 }
 
 $(document).ready(function() {
    if(isHangoutApiReady()){ 
         console.log("Yes it was ready. We can start."); 
-        showParticipants();
+        init();
     } else { 
         console.log("No - not read yet. We have to listen."); 
-        addOnApiReadyCallback(showParticipants);
+        addOnApiReadyCallback(init);
     }
 });

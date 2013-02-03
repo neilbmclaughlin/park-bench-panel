@@ -5,32 +5,67 @@ test("Participant unordered list is created", function() {
                 person : { 
                     displayName : 'Bob',
                     age : 21
-                } 
+                },
+                isSpeaker : false
             }; 
     var p2 = { 
                 person : { 
                     displayName : 'Fred',
                     age : 42 
-                }    
+                },
+                isSpeaker : false
             };
 
     var pList = [p1, p2];
     
     //act
-    buildParticipantList(pList);
+    buildParticipantLists(pList);
         
     //assert
-    var listItems = document
-        .getElementById("participantList")
-        .getElementsByTagName("li");
-    
+    var listItems = GetListItems("listenerList");
     
     equal(listItems.length, 2);
     equal(listItems[0].innerHTML, "Bob");
     equal(listItems[1].innerHTML, "Fred");
 });
 
-test("A request to speak moves the local participant from the participant queue to the speaker queue", function() {
+test("Participant speaker and listener lists are created", function() {
+    
+    //arrange
+    var p1 = { 
+                person : { 
+                    displayName : 'Bob',
+                    age : 21
+                },
+                isSpeaker : false
+
+            }; 
+    var p2 = { 
+                person : { 
+                    displayName : 'Fred',
+                    age : 42 
+                },
+                isSpeaker : true
+            };
+
+    var pList = [p1, p2];
+    
+    //act
+    buildParticipantLists(pList);
+        
+    //assert
+    var listItems = GetListItems("listenerList");
+    equal(listItems.length, 1);
+    equal(listItems[0].innerHTML, "Bob");
+    
+    var listItems = GetListItems("speakerList");
+    equal(listItems.length, 1);
+    equal(listItems[0].innerHTML, "Fred");
+});
+
+
+
+test("A request to speak updates the speaker list in state", function() {
     
     //arrange
     var p1 = { 
@@ -46,23 +81,13 @@ test("A request to speak moves the local participant from the participant queue 
                 }    
             };
             
-    buildParticipantList([p1, p2]);
  
     //act
     startTalk(p1);
+
         
     //assert
-    var participantItems = document
-        .getElementById("participantList")
-        .getElementsByTagName("li");
-    equal(participantItems.length, 1, 'participantList should have just one entry');
-    equal(participantItems[0].innerHTML, "Fred");
-
-    var speakerItems = document
-        .getElementById("speakerList")
-        .getElementsByTagName("li");
-    equal(speakerItems.length, 1, 'speakerList should have just one entry');
-    equal(speakerItems[0].innerHTML, "Bob");
+    fail('Not implemented yet');
     
 });
 
@@ -81,7 +106,7 @@ test("New participant added to the participant list", function() {
                     age : 42 
                 }    
             };
-    buildParticipantList([p1]);
+    buildParticipantLists([p1]);
     
     //act
     newParticipantJoined( { addedParticipants : [p2] } );
