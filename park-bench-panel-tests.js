@@ -112,7 +112,7 @@ test("New participant added to the participant list", function() {
     newParticipantJoined( { addedParticipants : [p2] } );
         
     //assert
-    var listItems = GetListItems("participantList");
+    var listItems = GetListItems("listenerList");
         
     equal(listItems.length, 2);
     equal(listItems[0].innerHTML, "Bob");
