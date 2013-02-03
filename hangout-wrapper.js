@@ -1,11 +1,11 @@
 function getParticipants() {
     var participants = gapi.hangout.getParticipants(); 
-    var speakerIds = getStateValue('speakerIds');
+    var speakerIds = gapi.hangout.data.getKeys();
     
     $(participants).each(function(index, Element) {
         Element.isSpeaker = ( jQuery.inArray(Element.id, speakerIds) >= 0 );
     });
-
+    
     return participants;
 }
 
@@ -25,10 +25,10 @@ function addOnNewParticipantCallback(f) {
     return gapi.hangout.onParticipantsAdded.add(f);   
 }
 
-function getStateValue(key) {
-    gapi.hangout.data.getValue(key);
+function setParticipantAsSpeaker(participantId) {
+    return gapi.hangout.data.submitDelta( { participantId : true } );
 }
 
-function setStateValue(key, value) {
-    gapi.hangout.data.setValue(key, value);
+function setParticipantAsListener(participantId) {
+    return gapi.hangout.data.clearValue( participantId );
 }

@@ -14,3 +14,9 @@ function getLocalParticipant() {
             } 
         };
 }
+
+function setParticipantAsSpeaker(participantId) {
+}
+
+function setParticipantAsListener(participantId) {
+}

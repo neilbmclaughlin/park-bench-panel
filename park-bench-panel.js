@@ -11,13 +11,15 @@ function buildParticipantLists(participants) {
 }
 
 function startTalk(participant) {
-    $('#listenerList li:contains("' + participant.person.displayName +'")').remove();
-    $('#speakerList').append($('<li/>').text(participant.person.displayName));
+    setParticipantAsSpeaker(participant.id);
+//    $('#listenerList li:contains("' + participant.person.displayName +'")').remove();
+//    $('#speakerList').append($('<li/>').text(participant.person.displayName));
 }
 
 function stopTalk(participant) {
-    $('#speakerList li:contains("' + participant.person.displayName +'")').remove();
-    $('#listenerList').append($('<li/>').text(participant.person.displayName));
+    setParticipantAsListener(participant.id);
+//    $('#speakerList li:contains("' + participant.person.displayName +'")').remove();
+//    $('#listenerList').append($('<li/>').text(participant.person.displayName));
 }
 
 function newParticipantJoined(participantAddedEvent) {
@@ -29,6 +31,7 @@ function newParticipantJoined(participantAddedEvent) {
 function init() {
     showParticipants();
     addOnNewParticipantCallback(newParticipantJoined);
+    addOnStateChangedCallback(showParticipants);
 }
 
 $(document).ready(function() {
