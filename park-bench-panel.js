@@ -28,10 +28,14 @@ function newParticipantJoined(participantAddedEvent) {
     });
 }
 
+function stateChanged(stateChangedEvent) {
+    showParticipants();
+}
+
 function init() {
     showParticipants();
     addOnNewParticipantCallback(newParticipantJoined);
-    addOnStateChangedCallback(showParticipants);
+    addOnStateChangedCallback(stateChanged);
 }
 
 $(document).ready(function() {
