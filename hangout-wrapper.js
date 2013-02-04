@@ -22,11 +22,11 @@ function getLocalParticipant() {
 }
 
 function addOnNewParticipantCallback(f) {
-    return gapi.hangout.onParticipantsAdded.add(f);   
+    gapi.hangout.onParticipantsAdded.add(f);   
 }
 
 function addOnStateChangedCallback(f) {
-    return gapi.hangout.onStateChanged.add(f);
+    //gapi.hangout.onStateChanged.add(f);
 }
 
 function setParticipantAsSpeaker(participantId) {
