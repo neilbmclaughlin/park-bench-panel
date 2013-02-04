@@ -35,7 +35,7 @@ function stateChanged(stateChangedEvent) {
 function init() {
     showParticipants();
     addOnNewParticipantCallback(newParticipantJoined);
-    addOnStateChangedCallback(stateChanged);
+    //addOnStateChangedCallback(stateChanged);
 }
 
 $(document).ready(function() {
