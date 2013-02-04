@@ -26,7 +26,7 @@ function addOnNewParticipantCallback(f) {
 }
 
 function addOnStateChangedCallback(f) {
-    //gapi.hangout.onStateChanged.add(f);
+    gapi.hangout.data.onStateChanged.add(f);
 }
 
 function setParticipantAsSpeaker(participantId) {
