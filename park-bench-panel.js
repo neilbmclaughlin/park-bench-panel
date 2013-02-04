@@ -4,6 +4,8 @@ function showParticipants() {
 }
 
 function buildParticipantLists(participants) {
+    $("#speakerList").empty();
+    $("#listenerList").empty();
     $(participants).each(function(index, Element) {
         var listName = (Element.isSpeaker ? '#speakerList' : '#listenerList');
         $(listName).append($('<li/>').text(Element.person.displayName));
