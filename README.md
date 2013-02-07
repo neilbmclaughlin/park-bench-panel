@@ -9,6 +9,7 @@ Useful Links
 ============
 
 * [Hangouts console](https://code.google.com/apis/console/b/0/#project:727799527310)
+* [Start page](http://htmlpreview.github.com/?https://raw.github.com/neilbmclaughlin/park-bench-panel/master/start.html)
 * [This github repo](https://github.com/neilbmclaughlin/park-bench-panel)
 * [Cloud 9 Project](http://c9.io/neilbmclaughlin/park-bench-panel)
 * [Demo app walkthrough](http://life.scarygami.net/hangoutapps/)
