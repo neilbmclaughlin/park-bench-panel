@@ -1,40 +1,42 @@
-function getParticipants() {
-    var participants = gapi.hangout.getParticipants(); 
-    var speakerIds = gapi.hangout.data.getKeys();
-    
-    $(participants).each(function(index, Element) {
-        Element.isSpeaker = ( jQuery.inArray(Element.id, speakerIds) >= 0 );
-    });
-    
-    return participants;
-}
+function hangoutWrapper() {
 
-function isHangoutApiReady() {
-    return gapi.hangout.isApiReady();    
-}
+    this.getParticipants = function() {
+        var participants = gapi.hangout.getParticipants();
+        var speakerIds = gapi.hangout.data.getKeys();
 
-function addOnApiReadyCallback(f) {
-    gapi.hangout.onApiReady.add(f);
-}
+        $(participants).each(function(index, Element) {
+            Element.isSpeaker = (jQuery.inArray(Element.id, speakerIds) >= 0);
+        });
 
-function getLocalParticipant() {
-    return gapi.hangout.getLocalParticipant();    
-}
+        return participants;
+    }
 
-function addOnNewParticipantCallback(f) {
-    gapi.hangout.onParticipantsAdded.add(f);   
-}
+    this.isHangoutApiReady = function() {
+        return gapi.hangout.isApiReady();
+    }
 
-function addOnStateChangedCallback(f) {
-    gapi.hangout.data.onStateChanged.add(f);
-}
+    this.addOnApiReadyCallback = function(f) {
+        gapi.hangout.onApiReady.add(f);
+    }
 
-function setParticipantAsSpeaker(participantId) {
-    var delta = {};
-    delta[participantId] = 'speaker';
-    return gapi.hangout.data.submitDelta( delta );
-}
+    this.getLocalParticipant = function() {
+        return gapi.hangout.getLocalParticipant();
+    }
 
-function setParticipantAsListener(participantId) {
-    return gapi.hangout.data.clearValue( participantId );
+    this.addOnNewParticipantCallback = function(f) {
+        gapi.hangout.onParticipantsAdded.add(f);
+    }
+
+    this.addOnStateChangedCallback = function(f) {
+        gapi.hangout.data.onStateChanged.add(f);
+    }
+
+    this.setParticipantAsSpeaker = function(delta) {
+        return gapi.hangout.data.submitDelta(delta);
+    }
+
+    this.setParticipantAsListener = function(participantId) {
+        return gapi.hangout.data.clearValue(participantId);
+    }
+
 }

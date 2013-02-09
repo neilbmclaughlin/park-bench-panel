@@ -1,22 +1,32 @@
-function getParticipants() { }
+function stubHangoutWrapper() {
 
-function isHangoutApiReady() { return true; }
+    this.getParticipants = function() {
+    }
 
-function addOnApiReadyCallback(f) { }
+    this.isHangoutApiReady = function() { return true; }
 
-function addOnNewParticipantCallback(f) { }
+    this.addOnApiReadyCallback = function(f) {
+    }
 
-function getLocalParticipant() {
-    return { 
-            person : { 
-                displayName : 'Bob',
-                age : 21
-            } 
-        };
-}
+    this.getLocalParticipant = function() {
+        return { 
+                person : { 
+                    displayName : 'Bob',
+                    age : 21
+                } 
+            };
+    }
 
-function setParticipantAsSpeaker(participantId) {
-}
+    this.addOnNewParticipantCallback = function(f) {
+    }
 
-function setParticipantAsListener(participantId) {
+    this.addOnStateChangedCallback = function(f) {
+    }
+
+    this.setParticipantAsSpeaker = function(participantId) {
+    }
+
+    this.setParticipantAsListener = function(participantId) {
+    }
+
 }

@@ -1,6 +1,7 @@
 test("Participant unordered list is created", function() {
     
     //arrange
+    var pbp = parkBenchPanel();
     var p1 = { 
                 person : { 
                     displayName : 'Bob',
@@ -19,7 +20,7 @@ test("Participant unordered list is created", function() {
     var pList = [p1, p2];
     
     //act
-    buildParticipantLists(pList);
+    pbp.buildParticipantLists(pList);
         
     //assert
     var listItems = GetListItems("listenerList");
@@ -32,6 +33,7 @@ test("Participant unordered list is created", function() {
 test("Participant speaker and listener lists are created", function() {
     
     //arrange
+    var pbp = parkBenchPanel();
     var p1 = { 
                 person : { 
                     displayName : 'Bob',
@@ -51,7 +53,7 @@ test("Participant speaker and listener lists are created", function() {
     var pList = [p1, p2];
     
     //act
-    buildParticipantLists(pList);
+    pbp.buildParticipantLists(pList);
         
     //assert
     var listItems = GetListItems("listenerList");
@@ -68,13 +70,24 @@ test("Participant speaker and listener lists are created", function() {
 test("A request to speak updates the speaker list in state", function() {
     
     //arrange
-    var p1 = { 
+    var passedDelta = 0;
+    
+    var stubHangoutWrapper = function () {
+
+        this.setParticipantAsSpeaker = function(delta) {
+            passedDelta = delta
+        }
+    }
+    var pbp = parkBenchPanel(stubHangoutWrapper);
+    var p1 = {
+                id : 1,
                 person : { 
                     displayName : 'Bob',
                     age : 21
                 } 
             }; 
-    var p2 = { 
+    var p2 = {
+                id : 2,
                 person : { 
                     displayName : 'Fred',
                     age : 42 
@@ -83,17 +96,18 @@ test("A request to speak updates the speaker list in state", function() {
             
  
     //act
-    startTalk(p1);
+    pbp.startTalk(p1);
 
         
     //assert
-    ok( false,  'Not implemented yet');
+    equal(passedDelta, { 1 : 'speaker' });
     
 });
 
 test("New participant added to the participant list", function() {
     
     //arrange
+    var pbp = parkBenchPanel();
     var p1 = { 
                 person : { 
                     displayName : 'Bob',
@@ -106,10 +120,10 @@ test("New participant added to the participant list", function() {
                     age : 42 
                 }    
             };
-    buildParticipantLists([p1]);
+    pbp.buildParticipantLists([p1]);
     
     //act
-    newParticipantJoined( { addedParticipants : [p2] } );
+    pbp.newParticipantJoined( { addedParticipants : [p2] } );
         
     //assert
     var listItems = GetListItems("listenerList");
