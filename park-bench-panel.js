@@ -1,4 +1,4 @@
-function parkBenchPanel(hangout) {
+var parkBenchPanel = function(hangout) {
     //Notes:
     //1: consider self invocation pattern to limit scope
     //2: can use gapi.hangout.onApiReady.add(this.onApiReady.bind(this)); to bind to current object and keep this in context
