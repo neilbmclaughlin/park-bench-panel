@@ -21,9 +21,9 @@
       <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
       <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
       <!--PBP SCRIPT BLOCK START-->
-  <script src="https://c9.io/neilbmclaughlin/park-bench-panel/workspace/hangout-wrapper.js"></script>
-  <script src="https://c9.io/neilbmclaughlin/park-bench-panel/workspace/park-bench-panel.js"></script>
-  <script src="https://c9.io/neilbmclaughlin/park-bench-panel/workspace/park-bench-panel-tests.js"></script>
+<script src="https://c9.io/neilbmclaughlin/park-bench-panel/workspace/hangout-wrapper.js"></script>
+<script src="https://c9.io/neilbmclaughlin/park-bench-panel/workspace/park-bench-panel.js"></script>
+<script src="https://c9.io/neilbmclaughlin/park-bench-panel/workspace/park-bench-panel-init.js"></script>
       <!--PBP SCRIPT BLOCK END-->
     </head>
 
