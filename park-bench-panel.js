@@ -45,8 +45,9 @@ var parkBenchPanel = function(hangout) {
     }
 
     this.init = function() {
-        showParticipants();
+        this.showParticipants();
         hangout.addOnNewParticipantCallback(newParticipantJoined);
         hangout.addOnStateChangedCallback(stateChanged);
     }
+    
 };
