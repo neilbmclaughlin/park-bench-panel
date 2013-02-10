@@ -1,7 +1,7 @@
 test("Participant unordered list is created", function() {
     
     //arrange
-    var pbp = parkBenchPanel();
+    var pbp = new parkBenchPanel();
     var p1 = { 
                 person : { 
                     displayName : 'Bob',
@@ -33,7 +33,7 @@ test("Participant unordered list is created", function() {
 test("Participant speaker and listener lists are created", function() {
     
     //arrange
-    var pbp = parkBenchPanel();
+    var pbp = new parkBenchPanel();
     var p1 = { 
                 person : { 
                     displayName : 'Bob',
@@ -70,15 +70,13 @@ test("Participant speaker and listener lists are created", function() {
 test("A request to speak updates the speaker list in state", function() {
     
     //arrange
-    var passedDelta = 0;
+    var passedDelta = {};
     
-    var stubHangoutWrapper = function () {
-
-        this.setParticipantAsSpeaker = function(delta) {
-            passedDelta = delta
-        }
-    }
-    var pbp = parkBenchPanel(stubHangoutWrapper);
+    var f = function(delta) { 
+        passedDelta = delta;
+    };
+    
+    var pbp = new parkBenchPanel({ setParticipantAsSpeaker : f });
     var p1 = {
                 id : 1,
                 person : { 
@@ -100,14 +98,15 @@ test("A request to speak updates the speaker list in state", function() {
 
         
     //assert
-    equal(passedDelta, { 1 : 'speaker' });
+    console.log(passedDelta);
+    equal(passedDelta[1], 'speaker' );
     
 });
 
 test("New participant added to the participant list", function() {
     
     //arrange
-    var pbp = parkBenchPanel();
+    var pbp = new parkBenchPanel();
     var p1 = { 
                 person : { 
                     displayName : 'Bob',
