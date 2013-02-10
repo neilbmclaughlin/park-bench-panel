@@ -1,7 +1,7 @@
 $(document).ready(function() {
     var hangout = new hangoutWrapper();    
     var pbp = parkBenchPanel(hangout);
-    if (isHangoutApiReady()) {
+    if (hangout.isHangoutApiReady()) {
         console.log("Yes it was ready. We can start.");
         pbp.init();
     }
