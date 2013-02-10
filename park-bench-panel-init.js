@@ -7,6 +7,6 @@ $(document).ready(function() {
     }
     else {
         console.log("No - not read yet. We have to listen.");
-        pbp.addOnApiReadyCallback(init);
+        hangout.addOnApiReadyCallback(pbp.init);
     }
 });
