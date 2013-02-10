@@ -6,7 +6,7 @@ var parkBenchPanel = function(hangout) {
     //4: gapi.hangout.getEnabledParticipants() returns array of only those participants who are actually running the app.
 
     this.showParticipants = function() {
-        var participants = getParticipants();
+        var participants = hangout.getParticipants();
         buildParticipantLists(participants);
     }
 
@@ -45,9 +45,8 @@ var parkBenchPanel = function(hangout) {
     }
 
     this.init = function() {
-        console.log(hangout);
-//        showParticipants();
-//        hangout.addOnNewParticipantCallback(newParticipantJoined);
-//        hangout.addOnStateChangedCallback(stateChanged);
+        showParticipants();
+        hangout.addOnNewParticipantCallback(newParticipantJoined);
+        hangout.addOnStateChangedCallback(stateChanged);
     }
 };
