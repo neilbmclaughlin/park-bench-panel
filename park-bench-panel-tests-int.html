@@ -11,16 +11,19 @@ After initial creation this file should not change frequently so opening from gi
   <meta charset="utf-8">
   <title>QUnit Example</title>
   <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.11.0.css">
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>  
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
   <script src="http://code.jquery.com/qunit/qunit-1.11.0.js"></script>
-  <script src="https://github.com/neilbmclaughlin/park-bench-panel/raw/master/park-bench-panel.js"></script>
-  <script src="https://github.com/neilbmclaughlin/park-bench-panel/raw/master/park-bench-panel-tests.js"></script>
+     <!--PBP SCRIPT BLOCK START-->
+      <script src="https://github.com/neilbmclaughlin/park-bench-panel/raw/master/hangout-wrapper.js"></script>
+      <script src="https://github.com/neilbmclaughlin/park-bench-panel/raw/master/park-bench-panel.js"></script>
+      <script src="https://github.com/neilbmclaughlin/park-bench-panel/raw/master/park-bench-panel-init.js"></script>
+     <!--PBP SCRIPT BLOCK END-->             
 </head>
 <body>
-  <div id="qunit"></div>
-  <div id="qunit-fixture">
+    <div id="qunit"></div>
+    <div id="qunit-fixture">
         <ul id="listenerList"></ul>
-        <ul id="speakerList"></ul>      
-  </div>
+        <ul id="speakerList"></ul>
+    </div>
 </body>
 </html>
