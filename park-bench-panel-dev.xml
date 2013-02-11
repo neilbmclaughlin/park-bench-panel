@@ -40,7 +40,7 @@
             </div>
             
             <div id="speakers">
-                <h3 class="ui-widget-header ui-corner-all">Speakers</h3>
+                <h3 class="ui-widget-header ui-corner-all">Speakers (Limit = 3)</h3>
                 <div class="ui-widget-content ui-corner-all">
                     <ul id="speakerList"></ul>
                 </div>
