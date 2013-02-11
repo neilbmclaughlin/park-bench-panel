@@ -47,8 +47,8 @@
             </div>
                     
             <div id="buttons">
-                <input class="button" type="button" value="I want to talk" id="btnStartTalk" onClick="startTalk(getLocalParticipant())"></input>
-                <input class="button" type="button" value="I'm done talking" id="btnStopTalk" onClick="stopTalk(getLocalParticipant())"></input>            
+                <input class="button" type="button" value="I want to talk" id="btnStartTalk" onClick="startTalk()"></input>
+                <input class="button" type="button" value="I'm done talking" id="btnStopTalk" onClick="stopTalk()"></input>            
             </div>
             
         </div>

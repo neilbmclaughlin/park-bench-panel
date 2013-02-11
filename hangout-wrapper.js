@@ -1,5 +1,5 @@
 function hangoutWrapper() {
-
+    
     this.getParticipants = function() {
         var participants = gapi.hangout.getParticipants();
         var speakerIds = gapi.hangout.data.getKeys();

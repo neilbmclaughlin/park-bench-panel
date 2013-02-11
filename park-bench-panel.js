@@ -5,9 +5,11 @@ var parkBenchPanel = function(hangout) {
     //3: person is only available on participants who are running the app
     //4: gapi.hangout.getEnabledParticipants() returns array of only those participants who are actually running the app.
 
+    var that = this;
+    
     this.showParticipants = function() {
         var participants = hangout.getParticipants();
-        buildParticipantLists(participants);
+        that.buildParticipantLists(participants);
     }
 
     this.buildParticipantLists = function(participants) {
@@ -28,7 +30,7 @@ var parkBenchPanel = function(hangout) {
 
     }
 
-    thisstopTalk = function(participant) {
+    this.stopTalk = function(participant) {
         hangout.setParticipantAsListener(participant.id);
         //    $('#speakerList li:contains("' + participant.person.displayName +'")').remove();
         //    $('#listenerList').append($('<li/>').text(participant.person.displayName));
@@ -41,13 +43,40 @@ var parkBenchPanel = function(hangout) {
     }
 
     this.stateChanged = function(stateChangedEvent) {
-        showParticipants();
+        that.showParticipants();
     }
-
+    
+    this.setup = function() {
+        that.showParticipants();
+        hangout.addOnNewParticipantCallback(that.newParticipantJoined);
+        hangout.addOnStateChangedCallback(that.stateChanged);
+    }
+    
     this.init = function() {
-        this.showParticipants();
-        hangout.addOnNewParticipantCallback(newParticipantJoined);
-        hangout.addOnStateChangedCallback(stateChanged);
+        console.log("init");    
+        if (hangout.isHangoutApiReady()) {
+            console.log("Yes it was ready. We can start.");
+            that.setup();
+        }
+        else {
+            console.log("No - not read yet. We have to listen.");
+            hangout.addOnApiReadyCallback(that.setup);
+        }
     }
     
 };
+
+var hangout = new hangoutWrapper();    
+var pbp = new parkBenchPanel(hangout);
+
+$(document).ready(function() {
+    pbp.init();
+});
+
+function startTalk() {
+    pbp.startTalk(hangout.getLocalParticipant());
+}
+
+function stopTalk() {
+    pbp.stopTalk(hangout.getLocalParticipant());
+}
