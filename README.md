@@ -5,12 +5,16 @@ Google hangout park bench panel app
 
 ====
 
-Useful Links
+Public Links
 ============
 
 * [Cloud 9 Project](http://c9.io/neilbmclaughlin/park-bench-panel)
-* [Hangouts console](https://code.google.com/apis/console/b/0/#project:727799527310)
 * [Start page](http://htmlpreview.github.com/?https://raw.github.com/neilbmclaughlin/park-bench-panel/master/start.html)
+
+Developer Links
+============
+
+* [Hangouts console](https://code.google.com/apis/console/b/0/#project:727799527310)
 * [Hello World App](https://hangoutsapi.talkgadget.google.com/hangouts?authuser=0&gid=857952554289)
 
 Tests
