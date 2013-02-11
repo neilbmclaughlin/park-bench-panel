@@ -5,14 +5,12 @@ test("Participant unordered list is created", function() {
     var p1 = { 
                 person : { 
                     displayName : 'Bob',
-                    age : 21
                 },
                 isSpeaker : false
             }; 
     var p2 = { 
                 person : { 
                     displayName : 'Fred',
-                    age : 42 
                 },
                 isSpeaker : false
             };
@@ -37,7 +35,6 @@ test("Participant speaker and listener lists are created", function() {
     var p1 = { 
                 person : { 
                     displayName : 'Bob',
-                    age : 21
                 },
                 isSpeaker : false
 
@@ -45,7 +42,6 @@ test("Participant speaker and listener lists are created", function() {
     var p2 = { 
                 person : { 
                     displayName : 'Fred',
-                    age : 42 
                 },
                 isSpeaker : true
             };
@@ -81,14 +77,12 @@ test("A request to speak updates the speaker list in state", function() {
                 id : 1,
                 person : { 
                     displayName : 'Bob',
-                    age : 21
                 } 
             }; 
     var p2 = {
                 id : 2,
                 person : { 
                     displayName : 'Fred',
-                    age : 42 
                 }    
             };
             
@@ -103,43 +97,57 @@ test("A request to speak updates the speaker list in state", function() {
     
 });
 
-test("A request to speak displays message when there are already 3 speakers", function() {
-    
-    //arrange
-    var passedDelta = false;
-    
-    var f = function(delta) { 
-        passedDelta = true;
-    };
-    
-    var pbp = new parkBenchPanel({ setParticipantAsSpeaker : f });
-    var p1 = {
-                id : 1,
-                person : { 
-                    displayName : 'Bob',
-                    age : 21
-                } 
-            }; 
-    var p2 = {
-                id : 2,
-                person : { 
-                    displayName : 'Fred',
-                    age : 42 
-                }    
-            };
-            
- 
-    //act
-    pbp.startTalk(p1);
-
-        
-    //assert
-    console.log(passedDelta);
-    equal(passedDelta, false );
-    var errorMessage = document.getElementById("errorMessage");
-    equal(errorMessage.visible, true);
-    
-});
+//test("A request to speak displays message when there are already 3 speakers", function() {
+//    
+//    //arrange
+//    var passedDelta = false;
+//    
+//    var f = function(delta) { 
+//        passedDelta = true;
+//    };
+//    
+//    var pbp = new parkBenchPanel({ setParticipantAsSpeaker : f });
+//    var p1 = {
+//                id : 1,
+//                person : { 
+//                    displayName : 'Bob'
+//                } 
+//            }; 
+//    var p2 = {
+//                id : 2,
+//                person : { 
+//                    displayName : 'Fred'
+//                }    
+//            };
+//
+//    var p3 = {
+//                id : 3,
+//                person : { 
+//                    displayName : 'Bill'
+//                }    
+//            };
+//    var p4 = {
+//                id : 4,
+//                person : { 
+//                    displayName : 'Joe'
+//                }    
+//            };
+//
+//    var pList = [p1, p2, p3];
+//
+//    pbp.buildParticipantLists(pList);
+//
+//    //act
+//    pbp.startTalk(p4);
+//
+//        
+//    //assert
+//    console.log(passedDelta);
+//    equal(passedDelta, false );
+//    var errorMessage = document.getElementById("errorMessage");
+//    equal(errorMessage.visible, true);
+//    
+//});
 
 
 test("New participant added to the participant list", function() {
@@ -149,13 +157,11 @@ test("New participant added to the participant list", function() {
     var p1 = { 
                 person : { 
                     displayName : 'Bob',
-                    age : 21
                 } 
             }; 
     var p2 = { 
                 person : { 
                     displayName : 'Fred',
-                    age : 42 
                 }    
             };
     pbp.buildParticipantLists([p1]);

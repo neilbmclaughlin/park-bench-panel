@@ -25,15 +25,11 @@ var parkBenchPanel = function(hangout) {
         var delta = {};
         delta[participant.id] = 'speaker';
         hangout.setParticipantAsSpeaker(delta);
-        //    $('#listenerList li:contains("' + participant.person.displayName +'")').remove();
-        //    $('#speakerList').append($('<li/>').text(participant.person.displayName));
 
     }
 
     this.stopTalk = function(participant) {
         hangout.setParticipantAsListener(participant.id);
-        //    $('#speakerList li:contains("' + participant.person.displayName +'")').remove();
-        //    $('#listenerList').append($('<li/>').text(participant.person.displayName));
     }
 
     this.newParticipantJoined = function(participantAddedEvent) {
