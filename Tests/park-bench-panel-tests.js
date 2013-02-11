@@ -103,6 +103,45 @@ test("A request to speak updates the speaker list in state", function() {
     
 });
 
+test("A request to speak displays message when there are already 3 speakers", function() {
+    
+    //arrange
+    var passedDelta = false;
+    
+    var f = function(delta) { 
+        passedDelta = true;
+    };
+    
+    var pbp = new parkBenchPanel({ setParticipantAsSpeaker : f });
+    var p1 = {
+                id : 1,
+                person : { 
+                    displayName : 'Bob',
+                    age : 21
+                } 
+            }; 
+    var p2 = {
+                id : 2,
+                person : { 
+                    displayName : 'Fred',
+                    age : 42 
+                }    
+            };
+            
+ 
+    //act
+    pbp.startTalk(p1);
+
+        
+    //assert
+    console.log(passedDelta);
+    equal(passedDelta, false );
+    var errorMessage = document.getElementById("errorMessage");
+    equal(errorMessage.visible, true);
+    
+});
+
+
 test("New participant added to the participant list", function() {
     
     //arrange
