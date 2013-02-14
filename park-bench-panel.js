@@ -36,10 +36,14 @@ var parkBenchPanel = function(hangout) {
     }
 
     this.startTalk = function(participant) {
-        var status = ( that.getSpeakerCount()['speaker'] < 3 ? 'speaker' : 'waiting' );
+        var status = ( that.getSpeakerCount()['speaker'] < 1 ? 'speaker' : 'waiting' );
         var delta = {};
         delta[participant.id] = status;
         hangout.setParticipantAsSpeaker(delta);
+        hangout.displayNotice( { 
+            message : participant.person.displayName + ' is waiting to speak',
+            opt_permanent : false
+        } );
     }
 
     this.stopTalk = function(participant) {

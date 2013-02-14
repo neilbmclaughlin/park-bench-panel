@@ -1,33 +1,3 @@
-test("Participant unordered list is created", function() {
-    
-    //arrange
-    var pbp = new parkBenchPanel();
-    var p1 = { 
-                person : { 
-                    displayName : 'Bob',
-                },
-                status : 'listener'
-            }; 
-    var p2 = { 
-                person : { 
-                    displayName : 'Fred',
-                },
-                status : 'listener'
-            };
-
-    var pList = [p1, p2];
-    
-    //act
-    pbp.buildParticipantLists(pList);
-        
-    //assert
-    var listItems = GetListItems("listenerList");
-    
-    equal(listItems.length, 2);
-    equal(listItems[0].innerHTML, "Bob");
-    equal(listItems[1].innerHTML, "Fred");
-});
-
 test("Participant speaker, waiting and listener lists are created", function() {
     
     //arrange
@@ -73,8 +43,6 @@ test("Participant speaker, waiting and listener lists are created", function() {
     equal(listItems[0].innerHTML, "Bill");
 });
 
-
-
 test("A request to speak updates the speaker list in state", function() {
     
     //arrange
@@ -95,7 +63,8 @@ test("A request to speak updates the speaker list in state", function() {
     
     var pbp = new parkBenchPanel( { 
         setParticipantAsSpeaker : function(delta) { passedDelta = delta },
-        getParticipants : function() { return [p1, p2]; }
+        getParticipants : function() { return [p1, p2]; },
+        displayNotice : function() { }
     });
  
     //act
@@ -103,7 +72,6 @@ test("A request to speak updates the speaker list in state", function() {
 
         
     //assert
-    console.log(passedDelta);
     equal(passedDelta[1], 'speaker' );
     
 });
@@ -137,7 +105,8 @@ test("If there are already 3 speakers then a participant who wants to speak shou
 
     var pbp = new parkBenchPanel( { 
         getParticipants : function() { return [p1, p2, p3, p4]; },
-        setParticipantAsSpeaker : function(delta) { passedDelta = delta }
+        setParticipantAsSpeaker : function(delta) { passedDelta = delta },
+        displayNotice : function() { }
     });
 
     //act
@@ -147,6 +116,48 @@ test("If there are already 3 speakers then a participant who wants to speak shou
     equal(passedDelta[p4['id']], 'waiting');
 
 });
+
+test("If a speaker goes into the waiting queue then a notice should be displayed", function() {
+    
+    //arrange
+         
+    var p1 = {
+        id : 1, 
+        person : { displayName : 'Bob' }, 
+        status : 'speaker'
+    }; 
+    var p2 = {
+        id : 2,
+        person : { displayName : 'Fred' },   
+        status : 'speaker'
+    };
+
+    var p3 = {
+        id : 3,
+        person : { displayName : 'Bill' },   
+        status : 'speaker'
+    };
+    var p4 = {
+        id : 4,
+        person : { displayName : 'Joe' },
+        status : 'listener'
+    };
+
+    var passedDisplayValues = {};
+    var pbp = new parkBenchPanel( { 
+        getParticipants : function() { return [p1, p2, p3, p4]; },
+        setParticipantAsSpeaker : function() { },
+        displayNotice : function(displayValues) { passedDisplayValues = displayValues }
+    });
+
+    //act
+    pbp.startTalk(p4);
+        
+    //assert
+    equal(passedDisplayValues['message'], 'Joe is waiting to speak');
+
+});
+
 
 test("New participant added to the participant list", function() {
     
