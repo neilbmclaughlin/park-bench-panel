@@ -9,7 +9,7 @@ Public Links
 ============
 
 * [Cloud 9 Project](http://c9.io/neilbmclaughlin/park-bench-panel)
-* [Start page](http://htmlpreview.github.com/?https://raw.github.com/neilbmclaughlin/park-bench-panel/master/start.html)
+* [Start page](http://c9.io/neilbmclaughlin/park-bench-panel/workspace/workspace/start.html)
 
 Developer Links
 ============
@@ -20,8 +20,8 @@ Developer Links
 Tests
 =====
 
-* [Run qUnit dev tests from github](http://htmlpreview.github.com/?https://raw.github.com/neilbmclaughlin/park-bench-panel/master/Tests/park-bench-panel-tests-dev.html)
-* [Run qUnit int tests from github](http://htmlpreview.github.com/?https://raw.github.com/neilbmclaughlin/park-bench-panel/master/Tests/park-bench-panel-tests-int.html)
+* [Run qUnit dev tests from github](http://c9.io/neilbmclaughlin/park-bench-panel/workspace/Tests/park-bench-panel-tests-dev.html)
+* [Run qUnit int tests from github](http://c9.io/neilbmclaughlin/park-bench-panel/workspace/Tests/park-bench-panel-tests-int.html)
  
 Notes
 =====
