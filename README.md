@@ -22,6 +22,10 @@ Tests
 
 * [Run qUnit dev tests](http://c9.io/neilbmclaughlin/park-bench-panel/workspace/Tests/park-bench-panel-tests-dev.html)
 * [Run qUnit int tests](http://c9.io/neilbmclaughlin/park-bench-panel/workspace/Tests/park-bench-panel-tests-int.html)
+
+Note: These tests are served securely from c9 but include references to the non-secure url for qunit. In Chrome you will need to eplicitly allow loading.
+The secure url for code.jquery.com generates a certificate warning so can't be used.
+Maybe consider 
  
 Notes
 =====
