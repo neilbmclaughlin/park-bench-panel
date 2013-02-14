@@ -20,8 +20,8 @@ Developer Links
 Tests
 =====
 
-* [Run qUnit dev tests from github](http://c9.io/neilbmclaughlin/park-bench-panel/workspace/Tests/park-bench-panel-tests-dev.html)
-* [Run qUnit int tests from github](http://c9.io/neilbmclaughlin/park-bench-panel/workspace/Tests/park-bench-panel-tests-int.html)
+* [Run qUnit dev tests](http://c9.io/neilbmclaughlin/park-bench-panel/workspace/Tests/park-bench-panel-tests-dev.html)
+* [Run qUnit int tests](http://c9.io/neilbmclaughlin/park-bench-panel/workspace/Tests/park-bench-panel-tests-int.html)
  
 Notes
 =====
