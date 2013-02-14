@@ -6,13 +6,13 @@ test("Participant unordered list is created", function() {
                 person : { 
                     displayName : 'Bob',
                 },
-                isSpeaker : false
+                status : 'listener'
             }; 
     var p2 = { 
                 person : { 
                     displayName : 'Fred',
                 },
-                isSpeaker : false
+                status : 'listener'
             };
 
     var pList = [p1, p2];
@@ -28,7 +28,7 @@ test("Participant unordered list is created", function() {
     equal(listItems[1].innerHTML, "Fred");
 });
 
-test("Participant speaker and listener lists are created", function() {
+test("Participant speaker, waiting and listener lists are created", function() {
     
     //arrange
     var pbp = new parkBenchPanel();
@@ -36,17 +36,23 @@ test("Participant speaker and listener lists are created", function() {
                 person : { 
                     displayName : 'Bob',
                 },
-                isSpeaker : false
+                status : 'listener'
 
             }; 
     var p2 = { 
                 person : { 
                     displayName : 'Fred',
                 },
-                isSpeaker : true
+                status : 'speaker'
+            };
+    var p3 = { 
+                person : { 
+                    displayName : 'Bill',
+                },
+                status : 'waiting'
             };
 
-    var pList = [p1, p2];
+    var pList = [p1, p2, p3];
     
     //act
     pbp.buildParticipantLists(pList);
@@ -59,6 +65,12 @@ test("Participant speaker and listener lists are created", function() {
     var listItems = GetListItems("speakerList");
     equal(listItems.length, 1);
     equal(listItems[0].innerHTML, "Fred");
+
+    //Note: in live app should not be able to have a waiting entry
+    //when the number of speakers is less than the max number of speakers
+    var listItems = GetListItems("waitingList");
+    equal(listItems.length, 1);
+    equal(listItems[0].innerHTML, "Bill");
 });
 
 
@@ -67,12 +79,7 @@ test("A request to speak updates the speaker list in state", function() {
     
     //arrange
     var passedDelta = {};
-    
-    var f = function(delta) { 
-        passedDelta = delta;
-    };
-    
-    var pbp = new parkBenchPanel({ setParticipantAsSpeaker : f });
+        
     var p1 = {
                 id : 1,
                 person : { 
@@ -86,7 +93,10 @@ test("A request to speak updates the speaker list in state", function() {
                 }    
             };
     
-            
+    var pbp = new parkBenchPanel( { 
+        setParticipantAsSpeaker : function(delta) { passedDelta = delta },
+        getParticipants : function() { return [p1, p2]; }
+    });
  
     //act
     pbp.startTalk(p1);
@@ -98,73 +108,60 @@ test("A request to speak updates the speaker list in state", function() {
     
 });
 
-test("A request to speak displays message when there are already 3 speakers", function() {
+test("If there are already 3 speakers then a participant who wants to speak should have status set to waiting", function() {
     
     //arrange
-    var passedDelta = false;
-    
-    var f = function(delta) { 
-        passedDelta = true;
-    };
-    
-    var pbp = new parkBenchPanel({ setParticipantAsSpeaker : f });
+    var passedDelta = {};
+         
     var p1 = {
-                id : 1,
-                person : { 
-                    displayName : 'Bob'
-                } 
-            }; 
+        id : 1, 
+        person : { displayName : 'Bob' }, 
+        status : 'speaker'
+    }; 
     var p2 = {
-                id : 2,
-                person : { 
-                    displayName : 'Fred'
-                }    
-            };
+        id : 2,
+        person : { displayName : 'Fred' },   
+        status : 'speaker'
+    };
 
     var p3 = {
-                id : 3,
-                person : { 
-                    displayName : 'Bill'
-                }    
-            };
+        id : 3,
+        person : { displayName : 'Bill' },   
+        status : 'speaker'
+    };
     var p4 = {
-                id : 4,
-                person : { 
-                    displayName : 'Joe'
-                }    
-            };
+        id : 4,
+        person : { displayName : 'Joe' },
+        status : 'listener'
+    };
 
-    var pList = [p1, p2, p3];
-
-    pbp.buildParticipantLists(pList);
+    var pbp = new parkBenchPanel( { 
+        getParticipants : function() { return [p1, p2, p3, p4]; },
+        setParticipantAsSpeaker : function(delta) { passedDelta = delta }
+    });
 
     //act
     pbp.startTalk(p4);
-
         
     //assert
-    console.log(passedDelta);
-    equal(passedDelta, true );
-    var errorMessage = document.getElementById("errorMessage");
-    equal(errorMessage.visible, true);
-    
-});
+    equal(passedDelta[p4['id']], 'waiting');
 
+});
 
 test("New participant added to the participant list", function() {
     
     //arrange
     var pbp = new parkBenchPanel();
-    var p1 = { 
-                person : { 
-                    displayName : 'Bob',
-                } 
-            }; 
-    var p2 = { 
-                person : { 
-                    displayName : 'Fred',
-                }    
-            };
+    var p1 = {
+        id : 1, 
+        person : { displayName : 'Bob' }, 
+        status : 'listener'
+    }; 
+    var p2 = {
+        id : 2,
+        person : { displayName : 'Fred' },   
+    };
+    
     pbp.buildParticipantLists([p1]);
     
     //act

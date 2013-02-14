@@ -2,10 +2,10 @@ function hangoutWrapper() {
     
     this.getParticipants = function() {
         var participants = gapi.hangout.getParticipants();
-        var speakerIds = gapi.hangout.data.getKeys();
+        var participantState = gapi.hangout.data.getState();
 
         $(participants).each(function(index, Element) {
-            Element.isSpeaker = (jQuery.inArray(Element.id, speakerIds) >= 0);
+            Element.status = participantState[Element.id] || 'listener';
         });
 
         return participants;

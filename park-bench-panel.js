@@ -16,16 +16,30 @@ var parkBenchPanel = function(hangout) {
         $("#speakerList").empty();
         $("#listenerList").empty();
         $(participants).each(function(index, Element) {
-            var listName = (Element.isSpeaker ? '#speakerList' : '#listenerList');
+            var listName = '#' + Element.status + 'List';
             $(listName).append($('<li/>').text(Element.person.displayName));
         });
     }
+    
+    this.getSpeakerCount = function() {
+
+        var participants = hangout.getParticipants();
+        var counts = { speaker : 0, waiting : 0, listener : 0 };
+        
+        $(participants).each(
+            function(index, Element) {
+                counts[Element.status]++;
+            } 
+        );
+        
+        return counts;
+    }
 
     this.startTalk = function(participant) {
+        var status = ( that.getSpeakerCount()['speaker'] < 3 ? 'speaker' : 'waiting' );
         var delta = {};
-        delta[participant.id] = 'speaker';
+        delta[participant.id] = status;
         hangout.setParticipantAsSpeaker(delta);
-        $('#errorMessage').show();
     }
 
     this.stopTalk = function(participant) {

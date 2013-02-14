@@ -39,13 +39,20 @@
                 </div>
             </div>
             
+            <div id="waiting">
+                <h3 class="ui-widget-header ui-corner-all">Waiting to speakers</h3>
+                <div class="ui-widget-content ui-corner-all">
+                    <ul id="waitingList"></ul>
+                </div>
+            </div>
+
             <div id="speakers">
-                <h3 class="ui-widget-header ui-corner-all">Speakers (Limit = 3)</h3>
+                <h3 class="ui-widget-header ui-corner-all">Speakers (Limit : 3)</h3>
                 <div class="ui-widget-content ui-corner-all">
                     <ul id="speakerList"></ul>
                 </div>
             </div>
-                    
+
             <div id="buttons">
                 <input class="button" type="button" value="I want to talk" id="btnStartTalk" onClick="startTalk()"></input>
                 <input class="button" type="button" value="I'm done talking" id="btnStopTalk" onClick="stopTalk()"></input>            
