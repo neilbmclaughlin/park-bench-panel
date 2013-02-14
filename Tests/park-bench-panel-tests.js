@@ -85,6 +85,7 @@ test("A request to speak updates the speaker list in state", function() {
                     displayName : 'Fred',
                 }    
             };
+    
             
  
     //act
@@ -97,57 +98,57 @@ test("A request to speak updates the speaker list in state", function() {
     
 });
 
-//test("A request to speak displays message when there are already 3 speakers", function() {
-//    
-//    //arrange
-//    var passedDelta = false;
-//    
-//    var f = function(delta) { 
-//        passedDelta = true;
-//    };
-//    
-//    var pbp = new parkBenchPanel({ setParticipantAsSpeaker : f });
-//    var p1 = {
-//                id : 1,
-//                person : { 
-//                    displayName : 'Bob'
-//                } 
-//            }; 
-//    var p2 = {
-//                id : 2,
-//                person : { 
-//                    displayName : 'Fred'
-//                }    
-//            };
-//
-//    var p3 = {
-//                id : 3,
-//                person : { 
-//                    displayName : 'Bill'
-//                }    
-//            };
-//    var p4 = {
-//                id : 4,
-//                person : { 
-//                    displayName : 'Joe'
-//                }    
-//            };
-//
-//    var pList = [p1, p2, p3];
-//
-//    pbp.buildParticipantLists(pList);
-//
-//    //act
-//    pbp.startTalk(p4);
-//
-//        
-//    //assert
-//    console.log(passedDelta);
-//    equal(passedDelta, false );
-//    var errorMessage = document.getElementById("errorMessage");
-//    equal(errorMessage.visible, true);
-//    
-//});
+test("A request to speak displays message when there are already 3 speakers", function() {
+    
+    //arrange
+    var passedDelta = false;
+    
+    var f = function(delta) { 
+        passedDelta = true;
+    };
+    
+    var pbp = new parkBenchPanel({ setParticipantAsSpeaker : f });
+    var p1 = {
+                id : 1,
+                person : { 
+                    displayName : 'Bob'
+                } 
+            }; 
+    var p2 = {
+                id : 2,
+                person : { 
+                    displayName : 'Fred'
+                }    
+            };
+
+    var p3 = {
+                id : 3,
+                person : { 
+                    displayName : 'Bill'
+                }    
+            };
+    var p4 = {
+                id : 4,
+                person : { 
+                    displayName : 'Joe'
+                }    
+            };
+
+    var pList = [p1, p2, p3];
+
+    pbp.buildParticipantLists(pList);
+
+    //act
+    pbp.startTalk(p4);
+
+        
+    //assert
+    console.log(passedDelta);
+    equal(passedDelta, true );
+    var errorMessage = document.getElementById("errorMessage");
+    equal(errorMessage.visible, true);
+    
+});
 
 
 test("New participant added to the participant list", function() {

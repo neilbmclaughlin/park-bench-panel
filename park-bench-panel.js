@@ -25,7 +25,7 @@ var parkBenchPanel = function(hangout) {
         var delta = {};
         delta[participant.id] = 'speaker';
         hangout.setParticipantAsSpeaker(delta);
-
+        $('#errorMessage').show();
     }
 
     this.stopTalk = function(participant) {
