@@ -9,7 +9,7 @@ Public Links
 ============
 
 * [Cloud 9 Project](http://c9.io/neilbmclaughlin/park-bench-panel)
-* [Start page](http://c9.io/neilbmclaughlin/park-bench-panel/workspace/workspace/start.html)
+* [Start page](http://c9.io/neilbmclaughlin/park-bench-panel/workspace/start.html)
 
 Developer Links
 ============
