@@ -17,11 +17,11 @@ Developer Links
 * [Hangouts console](https://code.google.com/apis/console/b/0/#project:727799527310)
 * [Hello World App](https://hangoutsapi.talkgadget.google.com/hangouts?authuser=0&gid=857952554289)
 
-Tests
-=====
+qUnit Tests
+===========
 
-* [Run qUnit dev tests](http://c9.io/neilbmclaughlin/park-bench-panel/workspace/Tests/park-bench-panel-tests-dev.html)
-* [Run qUnit int tests](http://c9.io/neilbmclaughlin/park-bench-panel/workspace/Tests/park-bench-panel-tests-int.html)
+* [Run dev tests](http://c9.io/neilbmclaughlin/park-bench-panel/workspace/Tests/park-bench-panel-tests-dev.html)
+* [Run int tests](http://c9.io/neilbmclaughlin/park-bench-panel/workspace/Tests/park-bench-panel-tests-int.html)
  
 Notes
 =====
