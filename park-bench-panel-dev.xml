@@ -40,7 +40,7 @@
             </div>
             
             <div id="waiting">
-                <h3 class="ui-widget-header ui-corner-all">Waiting to speakers</h3>
+                <h3 class="ui-widget-header ui-corner-all">Waiting to speak</h3>
                 <div class="ui-widget-content ui-corner-all">
                     <ul id="waitingList"></ul>
                 </div>
