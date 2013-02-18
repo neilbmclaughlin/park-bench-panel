@@ -1,6 +1,6 @@
 #!/bin/sh
 
-./generate-xml.sh
+./Scripts/generate-xml.sh
 git add .
 
 #
