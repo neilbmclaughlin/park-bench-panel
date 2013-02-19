@@ -1,0 +1,53 @@
+<html>
+
+    <!--  Note must use full closing tags. google app parser will not parse html correctly without them-->
+    
+    <head>
+      <title>* Park Bench Panel *</title>
+      <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.0/themes/start/jquery-ui.css"></link>
+      <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+      <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+      <!--PBP SCRIPT BLOCK START-->
+<link rel="stylesheet" type="text/css" href="https://c9.io/neilbmclaughlin/park-bench-panel/workspace/Content/park-bench-panel.css"></link>
+<script src="https://c9.io/neilbmclaughlin/park-bench-panel-new/workspace/Tests/fake-hangout-wrapper.js"></script>
+<script src="https://c9.io/neilbmclaughlin/park-bench-panel-new/workspace/park-bench-panel.js"></script>
+<script src="https://c9.io/neilbmclaughlin/park-bench-panel-new/workspace/park-bench-panel-init.js"></script>
+      <!--PBP SCRIPT BLOCK END-->
+    </head>
+
+    <body>
+        <div style="width : 100%">
+    
+            <h1 class="ui-widget-header ui-corner-all">Park Bench Panel</h1>
+                    
+            <div id="participants">
+                <h3 class="ui-widget-header ui-corner-all">Listeners</h3>
+                <div class="ui-widget-content  ui-corner-all">
+                    <ul id="listenerList"></ul>
+                </div>
+            </div>
+            
+            <div id="waiting">
+                <h3 class="ui-widget-header ui-corner-all">Waiting to speak</h3>
+                <div class="ui-widget-content ui-corner-all">
+                    <ul id="waitingList"></ul>
+                </div>
+            </div>
+
+            <div id="speakers">
+                <h3 class="ui-widget-header ui-corner-all">Speakers (Limit : 3)</h3>
+                <div class="ui-widget-content ui-corner-all">
+                    <ul id="speakerList"></ul>
+                </div>
+            </div>
+
+            <div id="buttons">
+                <input class="button" type="button" value="I want to talk" id="btnStartTalk" onClick="startTalk()"></input>
+                <input class="button" type="button" value="I'm done talking" id="btnStopTalk" onClick="stopTalk()"></input>            
+            </div>
+            
+        </div>
+
+    </body>
+
+</html>
