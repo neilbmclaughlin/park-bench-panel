@@ -16,7 +16,7 @@ Developer Links
 
 * [Hangouts console](https://code.google.com/apis/console/b/0/#project:727799527310)
 * [Hello World App](https://hangoutsapi.talkgadget.google.com/hangouts?authuser=0&gid=857952554289)
-* [Test page using fake hangout API](hhttp://c9.io/neilbmclaughlin/park-bench-panel/workspace/Tests/park-bench-panel-dummy.html)
+* [Test page using fake hangout API](https://c9.io/neilbmclaughlin/park-bench-panel/workspace/Tests/park-bench-panel-dummy.html)
 
 qUnit Tests
 ===========
