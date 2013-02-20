@@ -36,7 +36,7 @@ var parkBenchPanel = function(hangout) {
     }
 
     this.startTalk = function(participant) {
-        var status = ( that.getSpeakerCount()['speaker'] < 2 ? 'speaker' : 'waiting' );
+        var status = ( that.getSpeakerCount()['speaker'] < 3 ? 'speaker' : 'waiting' );
         var message = "";
         if(status === 'waiting') {
             //show display message

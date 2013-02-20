@@ -117,6 +117,46 @@ test("If there are already 3 speakers then a participant who wants to speak shou
 
 });
 
+test("If a speaker stops speaking and there is a participant waiting then they should be moved to the speaker list", function() {
+    //arrange
+    var passedDeltas = [];
+         
+    var p1 = {
+        id : 1, 
+        person : { displayName : 'Bob' }, 
+        status : 'speaker'
+    }; 
+    var p2 = {
+        id : 2,
+        person : { displayName : 'Fred' },   
+        status : 'speaker'
+    };
+
+    var p3 = {
+        id : 3,
+        person : { displayName : 'Bill' },   
+        status : 'speaker'
+    };
+    var p4 = {
+        id : 4,
+        person : { displayName : 'Joe' },
+        status : 'waiting'
+    };
+    var pbp = new parkBenchPanel( { 
+        getParticipants : function() { return [p1, p2, p3, p4]; },
+        setParticipantAsSpeaker : function(delta) { passedDeltas.push(delta) },
+        displayNotice : function() { }
+    });
+
+    //act
+    pbp.stopTalk(p3);
+        
+    //assert
+    equal(passedDeltas.length, 2);
+    //equal(passedDeltas[0][p3['id']], 'listener');    
+    //equal(passedDeltas[1][p4['id']], 'speaker');
+});
+
 test("If a speaker goes into the waiting queue then a notice should be displayed", function() {
     
     //arrange
@@ -193,7 +233,6 @@ test("If a speaker goes into the speaker queue then a notice should be displayed
     equal(passedDisplayValues['message'], 'Joe is about to speak');
 
 });
-
 
 test("New participant added to the participant list", function() {
     
