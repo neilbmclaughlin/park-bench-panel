@@ -158,6 +158,42 @@ test("If a speaker goes into the waiting queue then a notice should be displayed
 
 });
 
+test("If a speaker goes into the speaker queue then a notice should be displayed", function() {
+    
+    //arrange
+         
+    var p1 = {
+        id : 1, 
+        person : { displayName : 'Bob' }, 
+        status : 'speaker'
+    }; 
+    var p2 = {
+        id : 2,
+        person : { displayName : 'Fred' },   
+        status : 'speaker'
+    };
+
+    var p3 = {
+        id : 3,
+        person : { displayName : 'Joe' },
+        status : 'listener'
+    };
+
+    var passedDisplayValues = {};
+    var pbp = new parkBenchPanel( { 
+        getParticipants : function() { return [p1, p2, p3]; },
+        setParticipantAsSpeaker : function() { },
+        displayNotice : function(displayValues) { passedDisplayValues = displayValues }
+    });
+
+    //act
+    pbp.startTalk(p3);
+        
+    //assert
+    equal(passedDisplayValues['message'], 'Joe is about to speak');
+
+});
+
 
 test("New participant added to the participant list", function() {
     
