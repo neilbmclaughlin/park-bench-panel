@@ -234,7 +234,7 @@ test("If a speaker goes into the speaker queue then a notice should be displayed
 
 });
 
-test("New participant added to the participant list", function() {
+test("If a new participant is added then they should go into the participant list", function() {
     
     //arrange
     var pbp = new parkBenchPanel();
