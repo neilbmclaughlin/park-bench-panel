@@ -43,6 +43,52 @@ test("Participant speaker, waiting and listener lists are created", function() {
     equal(listItems[0].innerHTML, "Bill");
 });
 
+test("Participant lists should be cleared for each re-display", function() {
+    
+    //arrange
+    var pbp = new parkBenchPanel();
+    var p1 = { 
+                person : { 
+                    displayName : 'Bob',
+                },
+                status : 'listener'
+
+            }; 
+    var p2 = { 
+                person : { 
+                    displayName : 'Fred',
+                },
+                status : 'speaker'
+            };
+    var p3 = { 
+                person : { 
+                    displayName : 'Bill',
+                },
+                status : 'waiting'
+            };
+
+    var pList = [p1, p2, p3];
+    
+    //act
+    pbp.buildParticipantLists(pList);
+    pbp.buildParticipantLists(pList);
+        
+    //assert
+    var listItems = GetListItems("listenerList");
+    equal(listItems.length, 1);
+    equal(listItems[0].innerHTML, "Bob");
+    
+    var listItems = GetListItems("speakerList");
+    equal(listItems.length, 1);
+    equal(listItems[0].innerHTML, "Fred");
+
+    //Note: in live app should not be able to have a waiting entry
+    //when the number of speakers is less than the max number of speakers
+    var listItems = GetListItems("waitingList");
+    equal(listItems.length, 1);
+    equal(listItems[0].innerHTML, "Bill");
+});
+
 test("A request to speak updates the speaker list in state", function() {
     
     //arrange
@@ -156,53 +202,6 @@ test("If a speaker stops speaking and there is a participant waiting then the sp
     equal(passedDeltas[p3['id']], 'listener', 'Expect speaking participant #3 to be set to listener');    
     equal(passedDeltas[p4['id']], 'speaker', 'Expect waiting participant #4 to be set to speaker');
     
-});
-
-test("If a waiting speaker moves to being a speaker then they should move to the speaker list", function() {
-    //arrange
-    var passedDeltas = {};
-         
-    var p1 = {
-        id : 1, 
-        person : { displayName : 'Bob' }, 
-        status : 'speaker'
-    }; 
-    var p2 = {
-        id : 2,
-        person : { displayName : 'Fred' },   
-        status : 'speaker'
-    };
-
-    var p3 = {
-        id : 3,
-        person : { displayName : 'Bill' },   
-        status : 'speaker'
-    };
-    var p4 = {
-        id : 4,
-        person : { displayName : 'Joe' },
-        status : 'waiting'
-    };
-    var pbp = new parkBenchPanel( { 
-        getParticipants : function() { return [p1, p2, p3, p4]; },
-        setParticipantStatus : function(deltas) { passedDeltas = deltas },
-        displayNotice : function() { }
-    });
-
-    pbp.buildParticipantLists([p1,p2,p3,p4]);
-    
-    equal(GetListItems("listenerList").length, 0);
-    equal(GetListItems("waitingList").length, 1);
-    equal(GetListItems("speakerList").length, 3);
-        
-    //act
-    pbp.stopTalk(p3);
-        
-    //assert    
-    equal(GetListItems("listenerList").length, 1);
-    equal(GetListItems("waitingList").length, 0);
-    equal(GetListItems("speakerList").length, 3);
-
 });
 
 test("If a speaker goes into the waiting queue then a notice should be displayed", function() {
