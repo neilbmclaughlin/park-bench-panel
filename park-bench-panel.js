@@ -14,6 +14,7 @@ var parkBenchPanel = function(hangout) {
 
     this.buildParticipantLists = function(participants) {
         $("#speakerList").empty();
+        $("#waitingList").empty();
         $("#listenerList").empty();
         $(participants).each(function(index, Element) {
             var listName = '#' + Element.status + 'List';

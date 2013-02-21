@@ -117,7 +117,7 @@ test("If there are already 3 speakers then a participant who wants to speak shou
 
 });
 
-test("If a speaker stops speaking and there is a participant waiting then they should be moved to the speaker list", function() {
+test("If a speaker stops speaking and there is a participant waiting then the speaker becomes a listener and the waiting participant becomes the speaker.", function() {
     //arrange
     var passedDeltas = {};
          
@@ -156,11 +156,52 @@ test("If a speaker stops speaking and there is a participant waiting then they s
     equal(passedDeltas[p3['id']], 'listener', 'Expect speaking participant #3 to be set to listener');    
     equal(passedDeltas[p4['id']], 'speaker', 'Expect waiting participant #4 to be set to speaker');
     
-    var listItems = GetListItems("waitingList");
-    equal(listItems.length, 0);
-    //buildParticipantlist should empty waiting list - haven't made the change as haven't had a failing test yet
+});
+
+test("If a waiting speaker moves to being a speaker then they should move to the speaker list", function() {
+    //arrange
+    var passedDeltas = {};
+         
+    var p1 = {
+        id : 1, 
+        person : { displayName : 'Bob' }, 
+        status : 'speaker'
+    }; 
+    var p2 = {
+        id : 2,
+        person : { displayName : 'Fred' },   
+        status : 'speaker'
+    };
+
+    var p3 = {
+        id : 3,
+        person : { displayName : 'Bill' },   
+        status : 'speaker'
+    };
+    var p4 = {
+        id : 4,
+        person : { displayName : 'Joe' },
+        status : 'waiting'
+    };
+    var pbp = new parkBenchPanel( { 
+        getParticipants : function() { return [p1, p2, p3, p4]; },
+        setParticipantStatus : function(deltas) { passedDeltas = deltas },
+        displayNotice : function() { }
+    });
+
+    pbp.buildParticipantLists([p1,p2,p3,p4]);
     
-    equal(1,0, 'previous assert should fail as the waiting list should have been cleared but in manual test does not seem to')
+    equal(GetListItems("listenerList").length, 0);
+    equal(GetListItems("waitingList").length, 1);
+    equal(GetListItems("speakerList").length, 3);
+        
+    //act
+    pbp.stopTalk(p3);
+        
+    //assert    
+    equal(GetListItems("listenerList").length, 1);
+    equal(GetListItems("waitingList").length, 0);
+    equal(GetListItems("speakerList").length, 3);
 
 });
 
