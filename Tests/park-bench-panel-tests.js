@@ -158,6 +158,9 @@ test("If a speaker stops speaking and there is a participant waiting then they s
     
     var listItems = GetListItems("waitingList");
     equal(listItems.length, 0);
+    //buildParticipantlist should empty waiting list - haven't made the change as haven't had a failing test yet
+    
+    equal(1,0, 'previous assert should fail as the waiting list should have been cleared but in manual test does not seem to')
 
 });
 

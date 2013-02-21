@@ -71,9 +71,6 @@ function hangoutWrapper() {
             if ( delta[p.id] != undefined ) {
                 p.status = delta[p.id];
             }
-            else {
-                p.status = 'listener';
-            }
         });
         that.stateChangedCallBack(null);
     }
