@@ -50,7 +50,13 @@
             </div>
             
             <hr/>
-            
+
+            <div>
+                <label for="localParticipantSelect">Current local participant</label>
+                <select id="localParticipantSelect"><option>Select local participant ...</option></select>
+                <input class="button" type="button" value="Refresh participant list" id="btnRefreshParticipants" onClick="hangout.populateSelectList()"></input>                
+            </div>
+
             <div>
                 <label for="displayName">Name</label>
                 <input class="text" type="text" id="displayName">
@@ -60,8 +66,6 @@
             </div>
             
             <div>
-                <select id="localParticipantSelect"></select>
-                <input class="button" type="button" value="Refresh participant list" id="btnRefreshParticipants" onClick="hangout.populateSelectList()"></input>
             </div>
 
 

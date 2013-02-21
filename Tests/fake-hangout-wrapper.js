@@ -4,32 +4,32 @@ function hangoutWrapper() {
     {
         id: 1,
         person: {
-            displayName: 'Bob',
+            displayName: 'Bob (1)',
         },
         status: 'listener'
 
     }, {
         id: 2,
         person: {
-            displayName: 'Fred',
+            displayName: 'Fred (2)',
         },
         status: 'listener'
     }, {
         id: 3,
         person: {
-            displayName: 'Bill',
+            displayName: 'Bill (3)',
         },
         status: 'listener'
     }, {
         id: 4,
         person: {
-            displayName: 'Joe',
+            displayName: 'Joe (4)',
         },
         status: 'listener'
     }, {
         id: 5,
         person: {
-            displayName: 'Alf',
+            displayName: 'Alf (5)',
         },
         status: 'listener'
     }];
@@ -67,7 +67,7 @@ function hangoutWrapper() {
     this.clearParticipantStatus = function(participantId) {}
 
     this.setParticipantStatus = function(delta) {
-        jQuery.each(participants, function(i, p){
+        $.each(participants, function(i, p){
             if ( delta[p.id] != undefined ) {
                 p.status = delta[p.id];
             }
@@ -83,11 +83,11 @@ function hangoutWrapper() {
     }
 
     this.addTestParticipant = function() {
-        alert('boo');
+        var id = $('#participantId').val() * 1;
         var p = {
-            id : $('#participantId').val() * 1,
+            id : id,
             person: {
-                displayName : $('#displayName').val(),
+                displayName : $('#displayName').val() + ' (' + id + ')',
             },
             status: 'listener'
         };
@@ -98,9 +98,8 @@ function hangoutWrapper() {
     }
     
     this.populateSelectList = function() {
-        alert('hoo');
         $.each(participants, function(i, p){
-            $('#localParticipantSelect').appendTo('<option>' + p.person.displayName + '</option>');
+            $('#localParticipantSelect').append('<option>' + p.person.displayName + '</option>');
         });
        
     }
