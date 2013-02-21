@@ -21,7 +21,7 @@ var parkBenchPanel = function(hangout) {
         });
     }
     
-    this.getParticipantCount = function() {
+    this.getParticipantCounts = function() {
 
         var participants = hangout.getParticipants();
         var counts = { speaker : 0, waiting : 0, listener : 0 };
@@ -36,7 +36,7 @@ var parkBenchPanel = function(hangout) {
     }
 
     this.startTalk = function(participant) {
-        var status = ( that.getParticipantCount()['speaker'] < 3 ? 'speaker' : 'waiting' );
+        var status = ( that.getParticipantCounts()['speaker'] < 3 ? 'speaker' : 'waiting' );
         var message = "";
         if(status === 'waiting') {
             //show display message
@@ -67,7 +67,6 @@ var parkBenchPanel = function(hangout) {
         if ( waitingParticipants.length > 0 ) {
             delta[waitingParticipants[0].id] = 'speaker';
         }
-        
         hangout.setParticipantStatus(delta);
     }
 

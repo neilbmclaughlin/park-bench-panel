@@ -155,6 +155,10 @@ test("If a speaker stops speaking and there is a participant waiting then they s
     equal(Object.keys(passedDeltas).length, 2, 'Expect 2 participant statuses to be updated');
     equal(passedDeltas[p3['id']], 'listener', 'Expect speaking participant #3 to be set to listener');    
     equal(passedDeltas[p4['id']], 'speaker', 'Expect waiting participant #4 to be set to speaker');
+    
+    var listItems = GetListItems("waitingList");
+    equal(listItems.length, 0);
+
 });
 
 test("If a speaker goes into the waiting queue then a notice should be displayed", function() {

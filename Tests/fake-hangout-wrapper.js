@@ -1,6 +1,7 @@
 function hangoutWrapper() {
 
-    var participants = [{
+    var participants = [
+    {
         id: 1,
         person: {
             displayName: 'Bob',
@@ -17,6 +18,18 @@ function hangoutWrapper() {
         id: 3,
         person: {
             displayName: 'Bill',
+        },
+        status: 'listener'
+    }, {
+        id: 4,
+        person: {
+            displayName: 'Joe',
+        },
+        status: 'listener'
+    }, {
+        id: 5,
+        person: {
+            displayName: 'Alf',
         },
         status: 'listener'
     }];
@@ -39,7 +52,7 @@ function hangoutWrapper() {
 
     this.getLocalParticipant = function() {
         return jQuery.grep(participants, function(p){
-            return (p.person.displayName == $('#localParticipant').val() );
+            return (p.person.displayName == $('#localParticipantSelect').val() );
         })[0];
     }
 
@@ -56,7 +69,10 @@ function hangoutWrapper() {
     this.setParticipantStatus = function(delta) {
         jQuery.each(participants, function(i, p){
             if ( delta[p.id] != undefined ) {
-                p.status = 'speaker'
+                p.status = delta[p.id];
+            }
+            else {
+                p.status = 'listener';
             }
         });
         that.stateChangedCallBack(null);
@@ -67,6 +83,7 @@ function hangoutWrapper() {
     }
 
     this.addTestParticipant = function() {
+        alert('boo');
         var p = {
             id : $('#participantId').val() * 1,
             person: {
@@ -78,5 +95,13 @@ function hangoutWrapper() {
         that.newParticipantCallBack({
             addedParticipants: [p]
         });
+    }
+    
+    this.populateSelectList = function() {
+        alert('hoo');
+        $.each(participants, function(i, p){
+            $('#localParticipantSelect').appendTo('<option>' + p.person.displayName + '</option>');
+        });
+       
     }
 }
