@@ -31,12 +31,17 @@ function hangoutWrapper() {
         gapi.hangout.data.onStateChanged.add(f);
     }
 
-    this.setParticipantAsSpeaker = function(delta) {
+    this.setParticipantStatus = function(delta) {
         return gapi.hangout.data.submitDelta(delta);
     }
 
-    this.setParticipantAsListener = function(participantId) {
+    this.clearParticipantStatus = function(participantId) {
         return gapi.hangout.data.clearValue(participantId);
     }
+    
+    this.displayNotice = function(message) {
+        gapi.hangout.layout.displayNotice(message);
+    }
+
 
 }

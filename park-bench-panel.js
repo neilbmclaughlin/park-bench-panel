@@ -21,7 +21,7 @@ var parkBenchPanel = function(hangout) {
         });
     }
     
-    this.getSpeakerCount = function() {
+    this.getParticipantCount = function() {
 
         var participants = hangout.getParticipants();
         var counts = { speaker : 0, waiting : 0, listener : 0 };
@@ -36,7 +36,7 @@ var parkBenchPanel = function(hangout) {
     }
 
     this.startTalk = function(participant) {
-        var status = ( that.getSpeakerCount()['speaker'] < 3 ? 'speaker' : 'waiting' );
+        var status = ( that.getParticipantCount()['speaker'] < 3 ? 'speaker' : 'waiting' );
         var message = "";
         if(status === 'waiting') {
             //show display message
@@ -48,7 +48,7 @@ var parkBenchPanel = function(hangout) {
         
         var delta = {};
         delta[participant.id] = status;
-        hangout.setParticipantAsSpeaker(delta);
+        hangout.setParticipantStatus(delta);
         hangout.displayNotice( { 
             message : participant.person.displayName + " " + message,
             opt_permanent : false
@@ -56,7 +56,19 @@ var parkBenchPanel = function(hangout) {
     }
 
     this.stopTalk = function(participant) {
-        hangout.setParticipantAsListener(participant.id);
+        var delta = {};
+        delta[participant.id] = 'listener';
+
+        //Move a waiting participant to the speaker queue
+        //Is this a fifo queue - need test
+        var participants = hangout.getParticipants();
+        var waitingParticipants = $.grep(participants, function (p) { return p.status == 'waiting'; });
+        
+        if ( waitingParticipants.length > 0 ) {
+            delta[waitingParticipants[0].id] = 'speaker';
+        }
+        
+        hangout.setParticipantStatus(delta);
     }
 
     this.newParticipantJoined = function(participantAddedEvent) {

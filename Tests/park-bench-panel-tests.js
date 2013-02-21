@@ -62,7 +62,7 @@ test("A request to speak updates the speaker list in state", function() {
             };
     
     var pbp = new parkBenchPanel( { 
-        setParticipantAsSpeaker : function(delta) { passedDelta = delta },
+        setParticipantStatus : function(delta) { passedDelta = delta },
         getParticipants : function() { return [p1, p2]; },
         displayNotice : function() { }
     });
@@ -105,7 +105,7 @@ test("If there are already 3 speakers then a participant who wants to speak shou
 
     var pbp = new parkBenchPanel( { 
         getParticipants : function() { return [p1, p2, p3, p4]; },
-        setParticipantAsSpeaker : function(delta) { passedDelta = delta },
+        setParticipantStatus : function(delta) { passedDelta = delta },
         displayNotice : function() { }
     });
 
@@ -119,7 +119,7 @@ test("If there are already 3 speakers then a participant who wants to speak shou
 
 test("If a speaker stops speaking and there is a participant waiting then they should be moved to the speaker list", function() {
     //arrange
-    var passedDeltas = [];
+    var passedDeltas = {};
          
     var p1 = {
         id : 1, 
@@ -144,7 +144,7 @@ test("If a speaker stops speaking and there is a participant waiting then they s
     };
     var pbp = new parkBenchPanel( { 
         getParticipants : function() { return [p1, p2, p3, p4]; },
-        setParticipantAsSpeaker : function(delta) { passedDeltas.push(delta) },
+        setParticipantStatus : function(deltas) { passedDeltas = deltas },
         displayNotice : function() { }
     });
 
@@ -152,9 +152,9 @@ test("If a speaker stops speaking and there is a participant waiting then they s
     pbp.stopTalk(p3);
         
     //assert
-    equal(passedDeltas.length, 2);
-    //equal(passedDeltas[0][p3['id']], 'listener');    
-    //equal(passedDeltas[1][p4['id']], 'speaker');
+    equal(Object.keys(passedDeltas).length, 2, 'Expect 2 participant statuses to be updated');
+    equal(passedDeltas[p3['id']], 'listener', 'Expect speaking participant #3 to be set to listener');    
+    equal(passedDeltas[p4['id']], 'speaker', 'Expect waiting participant #4 to be set to speaker');
 });
 
 test("If a speaker goes into the waiting queue then a notice should be displayed", function() {
@@ -186,7 +186,7 @@ test("If a speaker goes into the waiting queue then a notice should be displayed
     var passedDisplayValues = {};
     var pbp = new parkBenchPanel( { 
         getParticipants : function() { return [p1, p2, p3, p4]; },
-        setParticipantAsSpeaker : function() { },
+        setParticipantStatus : function() { },
         displayNotice : function(displayValues) { passedDisplayValues = displayValues }
     });
 
@@ -222,7 +222,7 @@ test("If a speaker goes into the speaker queue then a notice should be displayed
     var passedDisplayValues = {};
     var pbp = new parkBenchPanel( { 
         getParticipants : function() { return [p1, p2, p3]; },
-        setParticipantAsSpeaker : function() { },
+        setParticipantStatus : function() { },
         displayNotice : function(displayValues) { passedDisplayValues = displayValues }
     });
 

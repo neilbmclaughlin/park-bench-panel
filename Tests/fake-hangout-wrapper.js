@@ -50,8 +50,10 @@ function hangoutWrapper() {
     this.addOnStateChangedCallback = function(f) {
         this.stateChangedCallBack = f        
     }
+    
+    this.clearParticipantStatus = function(participantId) {}
 
-    this.setParticipantAsSpeaker = function(delta) {
+    this.setParticipantStatus = function(delta) {
         jQuery.each(participants, function(i, p){
             if ( delta[p.id] != undefined ) {
                 p.status = 'speaker'
@@ -59,8 +61,6 @@ function hangoutWrapper() {
         });
         that.stateChangedCallBack(null);
     }
-
-    this.setParticipantAsListener = function(participantId) {}
 
     this.displayNotice = function(message) {
         alert(message.message);
