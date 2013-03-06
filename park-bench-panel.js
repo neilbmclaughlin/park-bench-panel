@@ -90,6 +90,7 @@ var parkBenchPanel = function(hangout) {
             delta[waitingParticipants.first().id] =  waitingParticipants.first().statusHistory;
         }
         hangout.setParticipantStatus(delta);
+        hangout.displayNotice(participant.person.displayName + " has finished speaking");
     };
 
     this.newParticipantJoined = function(participantAddedEvent) {
