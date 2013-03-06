@@ -5,7 +5,7 @@ function hangoutWrapper() {
         var participantState = gapi.hangout.data.getState();
 
         $(participants).each(function(index, Element) {
-            Element.statusHistory = participantState[Element.id] || [ 'listener' ];
+            Element.statusHistory = participantState[Element.id].split(",") || [ 'listener' ];
         });
 
         return participants;
@@ -31,7 +31,11 @@ function hangoutWrapper() {
         gapi.hangout.data.onStateChanged.add(f);
     }
 
-    this.setParticipantStatus = function(delta) {
+    this.setParticipantStatus = function(participantStatusHistories) {
+        var delta = {};
+        for(p in participantStatusHistories) {
+            delta[p] = participantStatusHistories[p].join(",");
+        }
         return gapi.hangout.data.submitDelta(delta);
     }
 

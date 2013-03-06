@@ -1,3 +1,14 @@
+if(!Array.prototype.last) {
+    Array.prototype.last = function() {
+        return this[this.length - 1];
+    };
+}
+if(!Array.prototype.first) {
+    Array.prototype.first = function() {
+        return this[0];
+    };
+}
+
 var parkBenchPanel = function(hangout) {
 
     //Notes:
@@ -14,11 +25,15 @@ var parkBenchPanel = function(hangout) {
     };
 
     this.buildParticipantLists = function(participants) {
+        //find participant in list
+        //if participant in a list different from current state
+        //fade out and remove entry from old list
+        //fade in and add entry to new list
         $("#speakerList").empty();
         $("#waitingList").empty();
         $("#listenerList").empty();
         $(participants).each(function(index, Element) {
-            var listName = '#' + Element.statusHistory[Element.statusHistory.length-1] + 'List';
+            var listName = '#' + Element.statusHistory.last() + 'List';
             $(listName)
             .append($('<li/>')
             .text(Element.person.displayName));
@@ -33,7 +48,7 @@ var parkBenchPanel = function(hangout) {
         
         $(participants).each(
             function(index, Element) {
-                counts[Element.statusHistory[Element.statusHistory.length-1]]++;
+                counts[Element.statusHistory.last()]++;
             } 
         );
         
@@ -69,11 +84,13 @@ var parkBenchPanel = function(hangout) {
         //Move a waiting participant to the speaker queue
         //Is this a fifo queue - need test
         var participants = hangout.getParticipants();
-        var waitingParticipants = $.grep(participants, function (p) { return p.statusHistory[p.statusHistory.length - 1] == 'waiting'; });
+        var waitingParticipants = $.grep(participants, function (p) { 
+            return p.statusHistory.last() == 'waiting'; 
+        });
         
         if ( waitingParticipants.length > 0 ) {
             waitingParticipants[0].statusHistory.push('speaker');
-            delta[waitingParticipants[0].id] =  waitingParticipants[0].statusHistory;
+            delta[waitingParticipants.first().id] =  waitingParticipants.first().statusHistory;
         }
         hangout.setParticipantStatus(delta);
     };

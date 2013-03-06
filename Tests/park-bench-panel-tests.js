@@ -167,6 +167,42 @@ test("A request to speak updates the participant state with both the last and cu
     
 });
 
+test("A request to speak moves the participant from the listener queue to the speaker queue", function() {
+    //arrange
+    var passedDelta = {};
+        
+    var p1 = {
+                id : 101,
+                person : { 
+                    displayName : 'Bob',
+                },
+                statusHistory : [ 'listener' ]
+            }; 
+    var p2 = {
+                id : 102,
+                person : { 
+                    displayName : 'Fred',
+                },
+                statusHistory : [ 'listener' ]                
+            };
+    
+    var pbp = new parkBenchPanel( { 
+        setParticipantStatus : function(delta) { },
+        getParticipants : function() { return [p1, p2]; },
+        moveParticipant : function(p, q1, q2) { },
+        displayNotice : function() { }
+    });
+ 
+    //act
+    pbp.startTalk(p1);
+
+        
+    //assert
+    equal(passedDelta[p1['id']][0], 'listener' );
+    equal(passedDelta[p1['id']][1], 'speaker' );
+
+});
+
 test("If there are already 3 speakers then a participant who wants to speak should have status set to waiting", function() {
     
     //arrange
