@@ -1,4 +1,5 @@
 var parkBenchPanel = function(hangout) {
+
     //Notes:
     //1: consider self invocation pattern to limit scope
     //2: can use gapi.hangout.onApiReady.add(this.onApiReady.bind(this)); to bind to current object and keep this in context
@@ -10,17 +11,20 @@ var parkBenchPanel = function(hangout) {
     this.showParticipants = function() {
         var participants = hangout.getParticipants();
         that.buildParticipantLists(participants);
-    }
+    };
 
     this.buildParticipantLists = function(participants) {
         $("#speakerList").empty();
         $("#waitingList").empty();
         $("#listenerList").empty();
         $(participants).each(function(index, Element) {
-            var listName = '#' + Element.status + 'List';
-            $(listName).append($('<li/>').text(Element.person.displayName));
+            var listName = '#' + Element.statusHistory[Element.statusHistory.length-1] + 'List';
+            $(listName)
+            .append($('<li/>')
+            .text(Element.person.displayName));
+            //.animate({ opacity: 'toggle'}, 5000, 'linear');
         });
-    }
+    };
     
     this.getParticipantCounts = function() {
 
@@ -29,17 +33,17 @@ var parkBenchPanel = function(hangout) {
         
         $(participants).each(
             function(index, Element) {
-                counts[Element.status]++;
+                counts[Element.statusHistory[Element.statusHistory.length-1]]++;
             } 
         );
         
         return counts;
-    }
+    };
 
     this.startTalk = function(participant) {
-        var status = ( that.getParticipantCounts()['speaker'] < 3 ? 'speaker' : 'waiting' );
+        var newStatus = ( that.getParticipantCounts().speaker < 3 ? 'speaker' : 'waiting' );
         var message = "";
-        if(status === 'waiting') {
+        if(newStatus === 'waiting') {
             //show display message
             message = 'is waiting to speak';
         }else{
@@ -48,44 +52,47 @@ var parkBenchPanel = function(hangout) {
         }
         
         var delta = {};
-        delta[participant.id] = status;
+        participant.statusHistory.push(newStatus);
+        delta[participant.id] = participant.statusHistory;
         hangout.setParticipantStatus(delta);
         hangout.displayNotice( { 
             message : participant.person.displayName + " " + message,
             opt_permanent : false
         } );
-    }
+    };
 
     this.stopTalk = function(participant) {
         var delta = {};
-        delta[participant.id] = 'listener';
+        participant.statusHistory.push('listener');        
+        delta[participant.id] = participant.statusHistory;
 
         //Move a waiting participant to the speaker queue
         //Is this a fifo queue - need test
         var participants = hangout.getParticipants();
-        var waitingParticipants = $.grep(participants, function (p) { return p.status == 'waiting'; });
+        var waitingParticipants = $.grep(participants, function (p) { return p.statusHistory[p.statusHistory.length - 1] == 'waiting'; });
         
         if ( waitingParticipants.length > 0 ) {
-            delta[waitingParticipants[0].id] = 'speaker';
+            waitingParticipants[0].statusHistory.push('speaker');
+            delta[waitingParticipants[0].id] =  waitingParticipants[0].statusHistory;
         }
         hangout.setParticipantStatus(delta);
-    }
+    };
 
     this.newParticipantJoined = function(participantAddedEvent) {
         $(participantAddedEvent.addedParticipants).each(function(index, Element) {
             $('#listenerList').append($('<li/>').text(Element.person.displayName));
         });
-    }
+    };
 
     this.stateChanged = function(stateChangedEvent) {
         that.showParticipants();
-    }
+    };
     
     this.setup = function() {
         that.showParticipants();
         hangout.addOnNewParticipantCallback(that.newParticipantJoined);
         hangout.addOnStateChangedCallback(that.stateChanged);
-    }
+    };
     
     this.init = function() {
         console.log("init");    
@@ -97,6 +104,6 @@ var parkBenchPanel = function(hangout) {
             console.log("No - not read yet. We have to listen.");
             hangout.addOnApiReadyCallback(that.setup);
         }
-    }
+    };
     
 };

@@ -6,55 +6,53 @@ function hangoutWrapper() {
         person: {
             displayName: 'Bob (1)',
         },
-        status: 'listener'
+        statusHistory : [  'listener' ]
 
     }, {
         id: 2,
         person: {
             displayName: 'Fred (2)',
         },
-        status: 'listener'
+        statusHistory : [  'listener' ]
     }, {
         id: 3,
         person: {
             displayName: 'Bill (3)',
         },
-        status: 'listener'
+        statusHistory : [  'listener' ]
     }, {
         id: 4,
         person: {
             displayName: 'Joe (4)',
         },
-        status: 'listener'
+        statusHistory : [  'listener' ]
     }, {
         id: 5,
         person: {
             displayName: 'Alf (5)',
         },
-        status: 'listener'
+        statusHistory : [  'listener' ]
     }];
 
     var that = this;
-    var newParticipantCallBack = null;
-    var stateChangedCallBack = null;
 
     this.getParticipants = function() {
 
         return participants;
 
-    }
+    };
 
     this.isHangoutApiReady = function() {
         return true;
-    }
+    };
 
-    this.addOnApiReadyCallback = function(f) {}
+    this.addOnApiReadyCallback = function(f) {};
 
     this.getLocalParticipant = function() {
         return jQuery.grep(participants, function(p){
             return (p.person.displayName == $('#localParticipantSelect').val() );
         })[0];
-    }
+    };
 
     this.addOnNewParticipantCallback = function(f) {
         this.newParticipantCallBack = f
@@ -69,7 +67,7 @@ function hangoutWrapper() {
     this.setParticipantStatus = function(delta) {
         $.each(participants, function(i, p){
             if ( delta[p.id] != undefined ) {
-                p.status = delta[p.id];
+                p.statusHistory = delta[p.id];
             }
         });
         that.stateChangedCallBack(null);
@@ -86,7 +84,7 @@ function hangoutWrapper() {
             person: {
                 displayName : $('#displayName').val() + ' (' + id + ')',
             },
-            status: 'listener'
+            statusHistory : [  'listener' ]
         };
         participants.push(p);
         that.newParticipantCallBack({

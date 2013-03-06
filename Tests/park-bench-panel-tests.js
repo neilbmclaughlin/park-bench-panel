@@ -1,25 +1,27 @@
+//Test Suite 
+
 test("Participant speaker, waiting and listener lists are created", function() {
     
     //arrange
     var pbp = new parkBenchPanel();
-    var p1 = { 
+    var p1 = {
                 person : { 
                     displayName : 'Bob',
                 },
-                status : 'listener'
+                statusHistory : [ 'listener' ]
 
             }; 
     var p2 = { 
                 person : { 
                     displayName : 'Fred',
                 },
-                status : 'speaker'
+                statusHistory : [ 'speaker' ]
             };
     var p3 = { 
                 person : { 
                     displayName : 'Bill',
                 },
-                status : 'waiting'
+                statusHistory : [ 'waiting' ]
             };
 
     var pList = [p1, p2, p3];
@@ -41,6 +43,46 @@ test("Participant speaker, waiting and listener lists are created", function() {
     var listItems = GetListItems("waitingList");
     equal(listItems.length, 1);
     equal(listItems[0].innerHTML, "Bill");
+});
+
+test("Can create counts of participants by status", function() {
+    
+    //arrange
+    var pbp = new parkBenchPanel();
+    var p1 = {
+                person : { 
+                    displayName : 'Bob',
+                },
+                statusHistory : [ 'listener' ]
+
+            }; 
+    var p2 = { 
+                person : { 
+                    displayName : 'Fred',
+                },
+                statusHistory : [ 'speaker' ]
+            };
+    var p3 = { 
+                person : { 
+                    displayName : 'Bill',
+                },
+                statusHistory : [ 'waiting' ]
+            };
+
+    var pList = [p1, p2, p3];
+
+    var pbp = new parkBenchPanel( { 
+        getParticipants : function() { return pList; },
+    });
+
+    //act
+    var counts = pbp.getParticipantCounts();
+        
+    //assert
+    equal(counts['listener'], 1);
+    equal(counts['waiting'], 1);
+    equal(counts['speaker'], 1);
+    
 });
 
 test("Participant lists should be cleared for each re-display", function() {
@@ -51,20 +93,20 @@ test("Participant lists should be cleared for each re-display", function() {
                 person : { 
                     displayName : 'Bob',
                 },
-                status : 'listener'
+                statusHistory : [ 'listener' ]
 
             }; 
     var p2 = { 
                 person : { 
                     displayName : 'Fred',
                 },
-                status : 'speaker'
+                statusHistory : [ 'speaker' ]
             };
     var p3 = { 
                 person : { 
                     displayName : 'Bill',
                 },
-                status : 'waiting'
+                statusHistory : [ 'waiting' ]
             };
 
     var pList = [p1, p2, p3];
@@ -89,22 +131,24 @@ test("Participant lists should be cleared for each re-display", function() {
     equal(listItems[0].innerHTML, "Bill");
 });
 
-test("A request to speak updates the speaker list in state", function() {
+test("A request to speak updates the participant state with both the last and current status", function() {
     
     //arrange
     var passedDelta = {};
         
     var p1 = {
-                id : 1,
+                id : 101,
                 person : { 
                     displayName : 'Bob',
-                } 
+                },
+                statusHistory : [ 'listener' ]
             }; 
     var p2 = {
-                id : 2,
+                id : 102,
                 person : { 
                     displayName : 'Fred',
-                }    
+                },
+                statusHistory : [ 'listener' ]                
             };
     
     var pbp = new parkBenchPanel( { 
@@ -118,7 +162,8 @@ test("A request to speak updates the speaker list in state", function() {
 
         
     //assert
-    equal(passedDelta[1], 'speaker' );
+    equal(passedDelta[p1['id']][0], 'listener' );
+    equal(passedDelta[p1['id']][1], 'speaker' );
     
 });
 
@@ -130,23 +175,23 @@ test("If there are already 3 speakers then a participant who wants to speak shou
     var p1 = {
         id : 1, 
         person : { displayName : 'Bob' }, 
-        status : 'speaker'
+        statusHistory : [ 'speaker' ]
     }; 
     var p2 = {
         id : 2,
         person : { displayName : 'Fred' },   
-        status : 'speaker'
+        statusHistory : [ 'speaker' ]
     };
 
     var p3 = {
         id : 3,
         person : { displayName : 'Bill' },   
-        status : 'speaker'
+        statusHistory : [ 'speaker' ]
     };
     var p4 = {
         id : 4,
         person : { displayName : 'Joe' },
-        status : 'listener'
+        statusHistory : [ 'listener' ]
     };
 
     var pbp = new parkBenchPanel( { 
@@ -159,7 +204,8 @@ test("If there are already 3 speakers then a participant who wants to speak shou
     pbp.startTalk(p4);
         
     //assert
-    equal(passedDelta[p4['id']], 'waiting');
+    equal(passedDelta[p4['id']][0], 'listener' );
+    equal(passedDelta[p4['id']][1], 'waiting' );
 
 });
 
@@ -170,23 +216,23 @@ test("If a speaker stops speaking and there is a participant waiting then the sp
     var p1 = {
         id : 1, 
         person : { displayName : 'Bob' }, 
-        status : 'speaker'
+        statusHistory : [ 'speaker' ]
     }; 
     var p2 = {
         id : 2,
         person : { displayName : 'Fred' },   
-        status : 'speaker'
+        statusHistory : [ 'speaker' ]
     };
 
     var p3 = {
         id : 3,
         person : { displayName : 'Bill' },   
-        status : 'speaker'
+        statusHistory : [ 'speaker' ]
     };
     var p4 = {
         id : 4,
         person : { displayName : 'Joe' },
-        status : 'waiting'
+        statusHistory : [ 'waiting' ]
     };
     var pbp = new parkBenchPanel( { 
         getParticipants : function() { return [p1, p2, p3, p4]; },
@@ -199,8 +245,10 @@ test("If a speaker stops speaking and there is a participant waiting then the sp
         
     //assert
     equal(Object.keys(passedDeltas).length, 2, 'Expect 2 participant statuses to be updated');
-    equal(passedDeltas[p3['id']], 'listener', 'Expect speaking participant #3 to be set to listener');    
-    equal(passedDeltas[p4['id']], 'speaker', 'Expect waiting participant #4 to be set to speaker');
+    equal(passedDeltas[p3['id']][0], 'speaker', 'Expect participant #3 previous status to be set to speaker');    
+    equal(passedDeltas[p3['id']][1], 'listener', 'Expect participant #3 current status to be set to listener');    
+    equal(passedDeltas[p4['id']][0], 'waiting', 'Expect participant #4 previous status to be set to speaker');    
+    equal(passedDeltas[p4['id']][1], 'speaker', 'Expect participant #4 current status to be set to listener');    
     
 });
 
@@ -211,23 +259,23 @@ test("If a speaker goes into the waiting queue then a notice should be displayed
     var p1 = {
         id : 1, 
         person : { displayName : 'Bob' }, 
-        status : 'speaker'
+        statusHistory : [ 'speaker' ]
     }; 
     var p2 = {
         id : 2,
         person : { displayName : 'Fred' },   
-        status : 'speaker'
+        statusHistory : [ 'speaker' ]
     };
 
     var p3 = {
         id : 3,
         person : { displayName : 'Bill' },   
-        status : 'speaker'
+        statusHistory : [ 'speaker' ]
     };
     var p4 = {
         id : 4,
         person : { displayName : 'Joe' },
-        status : 'listener'
+        statusHistory : [ 'listener' ]
     };
 
     var passedDisplayValues = {};
@@ -252,18 +300,18 @@ test("If a speaker goes into the speaker queue then a notice should be displayed
     var p1 = {
         id : 1, 
         person : { displayName : 'Bob' }, 
-        status : 'speaker'
+        statusHistory : [ 'speaker' ]
     }; 
     var p2 = {
         id : 2,
         person : { displayName : 'Fred' },   
-        status : 'speaker'
+        statusHistory : [ 'speaker' ]
     };
 
     var p3 = {
         id : 3,
         person : { displayName : 'Joe' },
-        status : 'listener'
+        statusHistory : [ 'listener' ]
     };
 
     var passedDisplayValues = {};
@@ -288,7 +336,7 @@ test("If a new participant is added then they should go into the participant lis
     var p1 = {
         id : 1, 
         person : { displayName : 'Bob' }, 
-        status : 'listener'
+        statusHistory : [ 'listener' ]
     }; 
     var p2 = {
         id : 2,

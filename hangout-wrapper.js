@@ -5,7 +5,7 @@ function hangoutWrapper() {
         var participantState = gapi.hangout.data.getState();
 
         $(participants).each(function(index, Element) {
-            Element.status = participantState[Element.id] || 'listener';
+            Element.statusHistory = participantState[Element.id] || [ 'listener' ];
         });
 
         return participants;
