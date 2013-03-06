@@ -3,8 +3,11 @@ function hangoutWrapper() {
     this.getParticipants = function() {
         var participants = gapi.hangout.getParticipants();
         var participantState = gapi.hangout.data.getState();
+        console.log("getParticipants")
 
         $(participants).each(function(index, Element) {
+            console.log(Element.id);
+            console.log(participantState[Element.id]);
             Element.statusHistory = participantState[Element.id].split(",") || [ 'listener' ];
         });
 
