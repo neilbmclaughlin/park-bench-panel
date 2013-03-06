@@ -8,7 +8,8 @@ function hangoutWrapper() {
         $(participants).each(function(index, Element) {
             console.log(Element.id);
             console.log(participantState[Element.id]);
-            Element.statusHistory = participantState[Element.id].split(",") || [ 'listener' ];
+            Element.statusHistory = 
+              participantState[Element.id] != null ? participantState[Element.id].split(",") : [ 'listener' ];
         });
 
         return participants;
