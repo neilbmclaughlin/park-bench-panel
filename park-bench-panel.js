@@ -70,10 +70,7 @@ var parkBenchPanel = function(hangout) {
         participant.statusHistory.push(newStatus);
         delta[participant.id] = participant.statusHistory;
         hangout.setParticipantStatus(delta);
-        hangout.displayNotice( { 
-            message : participant.person.displayName + " " + message,
-            opt_permanent : false
-        } );
+        hangout.displayNotice(participant.person.displayName + " " + message);
     };
 
     this.stopTalk = function(participant) {
