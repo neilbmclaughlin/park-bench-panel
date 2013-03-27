@@ -23,7 +23,12 @@ qUnit Tests
 
 * [Run dev tests](http://c9.io/neilbmclaughlin/park-bench-panel/workspace/Tests/park-bench-panel-tests-dev.html)
 * [Run int tests](http://c9.io/neilbmclaughlin/park-bench-panel/workspace/Tests/park-bench-panel-tests-int.html)
- 
+
+jasmine Tests
+=============
+
+* [Run dev tests](https://c9.io/neilbmclaughlin/park-bench-panel/workspace/AcceptanceTests/SpecRunner.html)
+
 Notes
 =====
 
