@@ -37,9 +37,7 @@ function hangoutWrapper() {
     var that = this;
 
     this.getParticipants = function() {
-
         return participants;
-
     };
 
     this.isHangoutApiReady = function() {
@@ -74,7 +72,7 @@ function hangoutWrapper() {
     }
 
     this.displayNotice = function(message) {
-        alert(message.message);
+        alert(message);
     }
 
     this.addTestParticipant = function() {

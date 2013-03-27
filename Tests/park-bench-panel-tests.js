@@ -1,396 +1,163 @@
 //Test Suite 
 
-test("Participant speaker, waiting and listener lists are created", function() {
-    
+
+var participantService = function(hangout, renderer) {
+
+    return {
+        participantMapper : function(p ,i) {
+            return {
+                id : p.person.id,
+                displayName : p.person.displayName,
+                setStatus : function(status) {
+                    renderer.move(this.displayName, this.getStatus(), status);
+                    hangout.saveStatus(this.id, status);
+                },
+                getStatus : function() {
+                    return hangout.getStatus(this.id);
+                },
+                display : function() {
+                    renderer.add();
+                },
+            };
+        }            
+    };
+};
+
+var parkBenchPanel = {};
+
+module( "Unit tests");
+
+test("Can add an entry to a list", function() {
+
     //arrange
-    var pbp = new parkBenchPanel();
-    var p1 = {
-                person : { 
-                    displayName : 'Bob',
-                },
-                statusHistory : [ 'listener' ]
-
-            }; 
-    var p2 = { 
-                person : { 
-                    displayName : 'Fred',
-                },
-                statusHistory : [ 'speaker' ]
-            };
-    var p3 = { 
-                person : { 
-                    displayName : 'Bill',
-                },
-                statusHistory : [ 'waiting' ]
-            };
-
-    var pList = [p1, p2, p3];
+    var r = renderer;
     
     //act
-    pbp.buildParticipantLists(pList);
-        
+    r.add("Bob", "listener");
+
     //assert
     var listItems = GetListItems("listenerList");
     equal(listItems.length, 1);
     equal(listItems[0].innerHTML, "Bob");
+
+});
+
+test("Can remove an entry from a list", function() {
+
+    //arrange
+    var r = renderer;
+    r.add("Bob", "listener");
     
+    //act
+    r.remove("Bob", "listener");
+
+    //assert
+    var listItems = GetListItems("listenerList");
+    equal(listItems.length, 0);
+    
+});
+
+test("Can move a entry between lists", function() {
+
+    //arrange
+    var r = renderer;
+    r.add("Bob", "listener");
+    
+    //act
+    r.move("Bob", "listener", "speaker");
+
+    //assert
+    var listItems = GetListItems("listenerList");
+    equal(listItems.length, 0);
     var listItems = GetListItems("speakerList");
     equal(listItems.length, 1);
-    equal(listItems[0].innerHTML, "Fred");
-
-    //Note: in live app should not be able to have a waiting entry
-    //when the number of speakers is less than the max number of speakers
-    var listItems = GetListItems("waitingList");
-    equal(listItems.length, 1);
-    equal(listItems[0].innerHTML, "Bill");
-});
-
-test("Can create counts of participants by status", function() {
-    
-    //arrange
-    var pbp = new parkBenchPanel();
-    var p1 = {
-                person : { 
-                    displayName : 'Bob',
-                },
-                statusHistory : [ 'listener' ]
-
-            }; 
-    var p2 = { 
-                person : { 
-                    displayName : 'Fred',
-                },
-                statusHistory : [ 'speaker' ]
-            };
-    var p3 = { 
-                person : { 
-                    displayName : 'Bill',
-                },
-                statusHistory : [ 'waiting' ]
-            };
-
-    var pList = [p1, p2, p3];
-
-    var pbp = new parkBenchPanel( { 
-        getParticipants : function() { return pList; },
-    });
-
-    //act
-    var counts = pbp.getParticipantCounts();
-        
-    //assert
-    equal(counts['listener'], 1);
-    equal(counts['waiting'], 1);
-    equal(counts['speaker'], 1);
     
 });
 
-test("Participant lists should be cleared for each re-display", function() {
-    
+test("Can create a new participant from a hangout particpant", function() {
     //arrange
-    var pbp = new parkBenchPanel();
-    var p1 = { 
-                person : { 
-                    displayName : 'Bob',
-                },
-                statusHistory : [ 'listener' ]
-
-            }; 
-    var p2 = { 
-                person : { 
-                    displayName : 'Fred',
-                },
-                statusHistory : [ 'speaker' ]
-            };
-    var p3 = { 
-                person : { 
-                    displayName : 'Bill',
-                },
-                statusHistory : [ 'waiting' ]
-            };
-
-    var pList = [p1, p2, p3];
+    var hangoutParticipant = {
+        person : {
+            id : 1,
+            displayName : 'Bob',
+        },
+    };
+    
+    var ps = participantService(null, null);
     
     //act
-    pbp.buildParticipantLists(pList);
-    pbp.buildParticipantLists(pList);
-        
-    //assert
-    var listItems = GetListItems("listenerList");
-    equal(listItems.length, 1);
-    equal(listItems[0].innerHTML, "Bob");
+    var p = ps.participantMapper(hangoutParticipant);
     
-    var listItems = GetListItems("speakerList");
-    equal(listItems.length, 1);
-    equal(listItems[0].innerHTML, "Fred");
-
-    //Note: in live app should not be able to have a waiting entry
-    //when the number of speakers is less than the max number of speakers
-    var listItems = GetListItems("waitingList");
-    equal(listItems.length, 1);
-    equal(listItems[0].innerHTML, "Bill");
+    //assert
+    equal(p.id, 1);
+    equal(p.displayName, 'Bob');
 });
 
-test("A request to speak updates the participant state with both the last and current status", function() {
-    
+test("Setting status for participant saves status and renders a move", function() {
     //arrange
-    var passedDelta = {};
-        
-    var p1 = {
-                id : 101,
-                person : { 
-                    displayName : 'Bob',
-                },
-                statusHistory : [ 'listener' ]
-            }; 
-    var p2 = {
-                id : 102,
-                person : { 
-                    displayName : 'Fred',
-                },
-                statusHistory : [ 'listener' ]                
-            };
+    var hangoutPassedStatus = '', hangoutPassedParticipantId = '';
+    var rendererPassedName = '', rendererPassedOldStatus = '', rendererPassedNewStatus = '';
     
-    var pbp = new parkBenchPanel( { 
-        setParticipantStatus : function(delta) { passedDelta = delta },
-        getParticipants : function() { return [p1, p2]; },
-        displayNotice : function() { }
-    });
- 
-    //act
-    pbp.startTalk(p1);
-
-        
-    //assert
-    equal(passedDelta[p1['id']][0], 'listener' );
-    equal(passedDelta[p1['id']][1], 'speaker' );
-    
-});
-
-test("A request to speak moves the participant from the listener queue to the speaker queue", function() {
-    //arrange
-    var passedDelta = {};
-        
-    var p1 = {
-                id : 101,
-                person : { 
-                    displayName : 'Bob',
-                },
-                statusHistory : [ 'listener' ]
-            }; 
-    var p2 = {
-                id : 102,
-                person : { 
-                    displayName : 'Fred',
-                },
-                statusHistory : [ 'listener' ]                
-            };
-    
-    var pbp = new parkBenchPanel( { 
-        setParticipantStatus : function(delta) { },
-        getParticipants : function() { return [p1, p2]; },
-        moveParticipant : function(p, q1, q2) { },
-        displayNotice : function() { }
-    });
- 
-    //act
-    pbp.startTalk(p1);
-
-        
-    //assert
-    equal(passedDelta[p1['id']][0], 'listener' );
-    equal(passedDelta[p1['id']][1], 'speaker' );
-
-});
-
-test("If there are already 3 speakers then a participant who wants to speak should have status set to waiting", function() {
-    
-    //arrange
-    var passedDelta = {};
-         
-    var p1 = {
-        id : 1, 
-        person : { displayName : 'Bob' }, 
-        statusHistory : [ 'speaker' ]
-    }; 
-    var p2 = {
-        id : 2,
-        person : { displayName : 'Fred' },   
-        statusHistory : [ 'speaker' ]
-    };
-
-    var p3 = {
-        id : 3,
-        person : { displayName : 'Bill' },   
-        statusHistory : [ 'speaker' ]
-    };
-    var p4 = {
-        id : 4,
-        person : { displayName : 'Joe' },
-        statusHistory : [ 'listener' ]
-    };
-
-    var pbp = new parkBenchPanel( { 
-        getParticipants : function() { return [p1, p2, p3, p4]; },
-        setParticipantStatus : function(delta) { passedDelta = delta },
-        displayNotice : function() { }
-    });
-
-    //act
-    pbp.startTalk(p4);
-        
-    //assert
-    equal(passedDelta[p4['id']][0], 'listener' );
-    equal(passedDelta[p4['id']][1], 'waiting' );
-
-});
-
-test("If a speaker stops speaking and there is a participant waiting then the speaker becomes a listener and the waiting participant becomes the speaker.", function() {
-    //arrange
-    var passedDeltas = {};
-         
-    var p1 = {
-        id : 1, 
-        person : { displayName : 'Bob' }, 
-        statusHistory : [ 'speaker' ]
-    }; 
-    var p2 = {
-        id : 2,
-        person : { displayName : 'Fred' },   
-        statusHistory : [ 'speaker' ]
-    };
-
-    var p3 = {
-        id : 3,
-        person : { displayName : 'Bill' },   
-        statusHistory : [ 'speaker' ]
-    };
-    var p4 = {
-        id : 4,
-        person : { displayName : 'Joe' },
-        statusHistory : [ 'waiting' ]
-    };
-    var pbp = new parkBenchPanel( { 
-        getParticipants : function() { return [p1, p2, p3, p4]; },
-        setParticipantStatus : function(deltas) { passedDeltas = deltas },
-        displayNotice : function() { }
-    });
-
-    //act
-    pbp.stopTalk(p3);
-        
-    //assert
-    equal(Object.keys(passedDeltas).length, 2, 'Expect 2 participant statuses to be updated');
-    equal(passedDeltas[p3['id']][0], 'speaker', 'Expect participant #3 previous status to be set to speaker');    
-    equal(passedDeltas[p3['id']][1], 'listener', 'Expect participant #3 current status to be set to listener');    
-    equal(passedDeltas[p4['id']][0], 'waiting', 'Expect participant #4 previous status to be set to speaker');    
-    equal(passedDeltas[p4['id']][1], 'speaker', 'Expect participant #4 current status to be set to listener');    
-    
-});
-
-test("If a speaker goes into the waiting queue then a notice should be displayed", function() {
-    
-    //arrange
-         
-    var p1 = {
-        id : 1, 
-        person : { displayName : 'Bob' }, 
-        statusHistory : [ 'speaker' ]
-    }; 
-    var p2 = {
-        id : 2,
-        person : { displayName : 'Fred' },   
-        statusHistory : [ 'speaker' ]
-    };
-
-    var p3 = {
-        id : 3,
-        person : { displayName : 'Bill' },   
-        statusHistory : [ 'speaker' ]
-    };
-    var p4 = {
-        id : 4,
-        person : { displayName : 'Joe' },
-        statusHistory : [ 'listener' ]
-    };
-
-    var passedDisplayValues = {};
-    var pbp = new parkBenchPanel( { 
-        getParticipants : function() { return [p1, p2, p3, p4]; },
-        setParticipantStatus : function() { },
-        displayNotice : function(displayValues) { passedDisplayValues = displayValues }
-    });
-
-    //act
-    pbp.startTalk(p4);
-        
-    //assert
-    equal(passedDisplayValues['message'], 'Joe is waiting to speak');
-
-});
-
-test("If a speaker goes into the speaker queue then a notice should be displayed", function() {
-    
-    //arrange
-         
-    var p1 = {
-        id : 1, 
-        person : { displayName : 'Bob' }, 
-        statusHistory : [ 'speaker' ]
-    }; 
-    var p2 = {
-        id : 2,
-        person : { displayName : 'Fred' },   
-        statusHistory : [ 'speaker' ]
-    };
-
-    var p3 = {
-        id : 3,
-        person : { displayName : 'Joe' },
-        statusHistory : [ 'listener' ]
-    };
-
-    var passedDisplayValues = {};
-    var pbp = new parkBenchPanel( { 
-        getParticipants : function() { return [p1, p2, p3]; },
-        setParticipantStatus : function() { },
-        displayNotice : function(displayValues) { passedDisplayValues = displayValues }
-    });
-
-    //act
-    pbp.startTalk(p3);
-        
-    //assert
-    equal(passedDisplayValues['message'], 'Joe is about to speak');
-
-});
-
-test("If a new participant is added then they should go into the participant list", function() {
-    
-    //arrange
-    var pbp = new parkBenchPanel();
-    var p1 = {
-        id : 1, 
-        person : { displayName : 'Bob' }, 
-        statusHistory : [ 'listener' ]
-    }; 
-    var p2 = {
-        id : 2,
-        person : { displayName : 'Fred' },   
+    var fakeHangout = {
+        saveStatus : function(participantId, status) {
+            hangoutPassedParticipantId = participantId;
+            hangoutPassedStatus = status; 
+        },
+        getStatus : function() { return 'listener' },
+        displayNotice : function(message) {},
     };
     
-    pbp.buildParticipantLists([p1]);
+    var fakeRenderer = {
+        move : function(name, oldStatus, newStatus) {
+            rendererPassedName = name;
+            rendererPassedOldStatus = oldStatus;
+            rendererPassedNewStatus = newStatus;
+        }
+    };
+    
+    var ps = participantService(fakeHangout, fakeRenderer);
+    
+    var hangoutParticipant = {
+        person : {
+            id : 1,
+            displayName : 'Bob',
+        },
+    };
+
+    
+    var p = ps.participantMapper(hangoutParticipant);
     
     //act
-    pbp.newParticipantJoined( { addedParticipants : [p2] } );
-        
+    p.setStatus('speaker');
+    
     //assert
-    var listItems = GetListItems("listenerList");
-        
-    equal(listItems.length, 2);
-    equal(listItems[0].innerHTML, "Bob");
-    equal(listItems[1].innerHTML, "Fred");
+    equal(hangoutPassedParticipantId, 1);
+    equal(hangoutPassedStatus, 'speaker')
+
+    equal(rendererPassedName, 'Bob')
+    equal(rendererPassedOldStatus, 'listener')
+    equal(rendererPassedNewStatus, 'speaker')
 });
+
+module( "Acceptance tests");
+
+test("When a PBP starts it should display participants", function() { 
+    
+    //arrange
+    pbp = parkBenchPanel;
+    
+    //act
+    
+    //assert
+    ok(false, 'not implemented') });
+
+test("A participant wants to talk: if less than 3 speakers they should be moved to the speaker list", function() { ok(false, 'not implemented') });
+
+test("A participant wants to talk: if 3 speakers they should be moved to the waiting list", function() { ok(false, 'not implemented') });
+
+test("description", function() { ok(false, 'not implemented') });
+
+
 
 function GetListItems(listName) {
     return document

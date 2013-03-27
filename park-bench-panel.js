@@ -1,124 +1,233 @@
-if(!Array.prototype.last) {
+if (typeof Object.create !== 'function') {
+    Object.create = function(o) {
+        function F() {}
+        F.prototype = o;
+        return new F();
+    };
+}
+
+Function.prototype.method = function(name, func) {
+    this.prototype[name] = func;
+    return this;
+};
+
+if (!Array.prototype.last) {
     Array.prototype.last = function() {
         return this[this.length - 1];
     };
 }
-if(!Array.prototype.first) {
+
+if (!Array.prototype.first) {
     Array.prototype.first = function() {
         return this[0];
     };
 }
 
-var parkBenchPanel = function(hangout) {
+var participant = function(spec) {
 
-    //Notes:
-    //1: consider self invocation pattern to limit scope
-    //2: can use gapi.hangout.onApiReady.add(this.onApiReady.bind(this)); to bind to current object and keep this in context
-    //3: person is only available on participants who are running the app
-    //4: gapi.hangout.getEnabledParticipants() returns array of only those participants who are actually running the app.
+    var that = {};
+    var statusChangedEventHandlers = spec.statusChangedEventHandlers || [];
 
-    var that = this;
-    
-    this.showParticipants = function() {
-        var participants = hangout.getParticipants();
-        that.buildParticipantLists(participants);
+    that.getId = function() {
+        return spec.id;
     };
 
-    this.buildParticipantLists = function(participants) {
-        //find participant in list
-        //if participant in a list different from current state
-        //fade out and remove entry from old list
-        //fade in and add entry to new list
-        $("#speakerList").empty();
-        $("#waitingList").empty();
-        $("#listenerList").empty();
-        $(participants).each(function(index, Element) {
-            var listName = '#' + Element.statusHistory.last() + 'List';
-            $(listName)
-            .append($('<li/>')
-            .text(Element.person.displayName));
-            //.animate({ opacity: 'toggle'}, 5000, 'linear');
+    that.getName = function() {
+        return spec.name;
+    };
+
+    that.getStatus = function() {
+        return spec.status;
+    };
+
+    that.setStatus = function(status) {
+        var lastStatus = spec.status;
+        spec.status = status;
+        $.each(statusChangedEventHandlers, function(i, h) {
+            h({
+                id: that.getId(),
+                name: that.getName(),
+                lastStatus: lastStatus,
+                currentStatus: that.getStatus()
+            });
         });
     };
-    
-    this.getParticipantCounts = function() {
 
-        var participants = hangout.getParticipants();
-        var counts = { speaker : 0, waiting : 0, listener : 0 };
+    that.addOnStatusChangedHandlers = function(handlers) {
+        $.each(handlers, function(i, h) {
+            statusChangedEventHandlers.push(h);
+        });
+    };
+
+    return that;
+};
+
+var participantMapper = function(gapi) {
+
+    return function(googleParticipant) {
         
-        $(participants).each(
-            function(index, Element) {
-                counts[Element.statusHistory.last()]++;
-            } 
-        );
+        var repositoryUpdatehandler = function(updateDetails) {
+            var delta = {};
+            delta[updateDetails.id] = updateDetails.currentStatus;
+            gapi.hangout.data.submitDelta(delta);
+        };
+
+        return participant({
+            id: googleParticipant.person.id,
+            name: googleParticipant.person.displayName,
+            status: gapi.hangout.data.getValue([googleParticipant.person.id]),
+            statusChangedEventHandlers: [ repositoryUpdatehandler ],
+        });
+    };
+};
+
+var hangoutWrapper = function(gapi) {
+
+    var getWrappedHandler = function(f) {
         
+        return function(googleParticipants) {
+            var mapper = participantMapper(gapi);
+            var pbpParticipants = $.map(googleParticipants, mapper);
+            f(pbpParticipants);
+        };
+    };
+
+    var setup = function(newParticipantsJoinedHandler, stateChanged, init) {        
+        gapi.hangout.onParticipantsAdded.add(getWrappedHandler(newParticipantsJoinedHandler));
+        gapi.hangout.data.onStateChanged.add(stateChanged);
+        init();
+    };
+    
+    return {
+        start: function(newParticipantsJoined, stateChanged, init) {
+            if (gapi.hangout.isApiReady()) {
+                setup(newParticipantsJoined, stateChanged, init);
+            }
+            else {
+                var f = function() {
+                    setup(newParticipantsJoined, stateChanged, init);
+                };
+                gapi.hangout.onApiReady.add(f);
+            }
+        },
+        getParticipants: function(statusChangedEventHandlers) {
+            return $.map(gapi.hangout.getParticipants(), participantMapper(gapi));
+        },
+        getLocalParticipant: function() {
+            return gapi.hangout.getLocalParticipant();
+        },
+    };
+};
+
+var renderer = function() {
+    return {
+        add: function(name, status) {
+            var listName = '#' + status + 'List';
+            $(listName).append($('<li/>').text(name));
+        },
+        remove: function(name, status) {
+            var listName = '#' + status + 'List';
+            $(listName + ' li:contains("' + name + '")').remove();
+        },
+        move: function(name, oldStatus, newStatus) {
+            this.remove(name, oldStatus);
+            this.add(name, newStatus);
+        },
+
+        statusChangedEventHandler: function(spec) {
+            this.move(spec.name, spec.lastStatus, spec.currentStatus);
+        }
+    };
+};
+
+var parkBenchPanel = function(repo, renderer) {
+
+    var participantRepo = repo;
+    var participantRenderer = renderer;
+    var participants = null;
+
+    var getParticipantCounts = function() {
+        var counts = {
+            speaker: 0,
+            waiting: 0,
+            listener: 0
+        };
+        $.each(participants, function(i, p) {
+            counts[p.getStatus()]++;
+        });
         return counts;
     };
 
-    this.startTalk = function(participant) {
-        var newStatus = ( that.getParticipantCounts().speaker < 3 ? 'speaker' : 'waiting' );
-        var message = "";
-        if(newStatus === 'waiting') {
-            //show display message
-            message = 'is waiting to speak';
-        }else{
-            //you are the speaker
-            message = 'is about to speak';
-        }
-        
-        var delta = {};
-        participant.statusHistory.push(newStatus);
-        delta[participant.id] = participant.statusHistory;
-        hangout.setParticipantStatus(delta);
-        hangout.displayNotice(participant.person.displayName + " " + message);
+    var getParticipantByName = function(name) {
+        return $.grep(participants, function(p, i) {
+            return p.getName() == name;
+        })[0];
     };
 
-    this.stopTalk = function(participant) {
-        var delta = {};
-        participant.statusHistory.push('listener');        
-        delta[participant.id] = participant.statusHistory;
-
-        //Move a waiting participant to the speaker queue
-        //Is this a fifo queue - need test
-        var participants = hangout.getParticipants();
-        var waitingParticipants = $.grep(participants, function (p) { 
-            return p.statusHistory.last() == 'waiting'; 
-        });
-        
-        if ( waitingParticipants.length > 0 ) {
-            waitingParticipants[0].statusHistory.push('speaker');
-            delta[waitingParticipants.first().id] =  waitingParticipants.first().statusHistory;
-        }
-        hangout.setParticipantStatus(delta);
-        hangout.displayNotice(participant.person.displayName + " has finished speaking");
+    var getParticipantById = function(id) {
+        return $.grep(participants, function(p, i) {
+            return p.getId() == id;
+        })[0];
     };
 
-    this.newParticipantJoined = function(participantAddedEvent) {
-        $(participantAddedEvent.addedParticipants).each(function(index, Element) {
-            $('#listenerList').append($('<li/>').text(Element.person.displayName));
+    var getParticipantsByStatus = function(status) {
+        return $.grep(participants, function(p, i) {
+            return p.getStatus() == status;
         });
     };
 
-    this.stateChanged = function(stateChangedEvent) {
-        that.showParticipants();
+    var setParticipantsStatus = function(participants, status) {
+        $.each(participants, function(i, p) {
+            p.setStatus(status);
+        });
     };
-    
-    this.setup = function() {
-        that.showParticipants();
-        hangout.addOnNewParticipantCallback(that.newParticipantJoined);
-        hangout.addOnStateChangedCallback(that.stateChanged);
+
+    var setParticipantsStatusChangedEventHandler = function(participants, eventHandlers) {
+        $.each(participants, function(i, p) {
+            p.addOnStatusChangedHandlers(eventHandlers);
+        });
     };
-    
-    this.init = function() {
-        console.log("init");    
-        if (hangout.isHangoutApiReady()) {
-            console.log("Yes it was ready. We can start.");
-            that.setup();
+
+    return {
+        init: function() {
+            participants = participantRepo.getParticipants();
+            setParticipantsStatusChangedEventHandler(participants, [ participantRenderer.statusChangedEventHandler ] );
+            setParticipantsStatus(participants, 'listener');            
+        },
+        gotSomethingToSay: function(localParticipantName) {
+            var participant = getParticipantByName(localParticipantName);
+            var status = (getParticipantCounts().speaker < 3 ? 'speaker' : 'waiting');
+            participant.setStatus(status);
+        },
+        doneTalkin: function(localParticipantName) {
+            var participant = getParticipantByName(localParticipantName);
+            participant.setStatus('listener');
+
+            var waitingParticipants = getParticipantsByStatus('waiting');
+            if (waitingParticipants.length > 0) {
+                waitingParticipants[0].setStatus('speaker');
+            }
+        },
+        getParticipants: function() {
+            return participants;
+        },
+        newParticipantsJoined: function(newParticipants) {
+            setParticipantsStatusChangedEventHandler(newParticipants, [ participantRenderer.statusChangedEventHandler ] );
+            setParticipantsStatus(newParticipants, 'listener');            
+            $.each(newParticipants, function(i, p) {
+                participants.push(p);
+            });
+        },
+        otherParticipantsChangedStatus: function(stateChangedEvents) {
+            $.each(stateChangedEvents, function(i, e) {
+                for(var id in e)
+                {
+                    getParticipantById(id).setStatus(e[id]);
+                }                
+            });
+        },
+        start: function() {
+            repo.start(this.newParticipantsJoined, this.otherParticipantsChangedStatus, this.init);
         }
-        else {
-            console.log("No - not read yet. We have to listen.");
-            hangout.addOnApiReadyCallback(that.setup);
-        }
     };
-    
 };

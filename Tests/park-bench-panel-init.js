@@ -1,14 +1,17 @@
-var hangout = new hangoutWrapper();    
-var pbp = new parkBenchPanel(hangout);
+var hangout = hangoutWrapper(gapi);
+var renderer = renderer();
+var pbp = parkBenchPanel(hangout, renderer);
 
 $(document).ready(function() {
-    pbp.init();
+    pbp.start();
 });
 
 function startTalk() {
-    pbp.startTalk(hangout.getLocalParticipant());
+    var localParticipantName = hangout.getLocalParticipant().getName();
+    pbp.gotSomethingToSay(localParticipantName);
 }
 
 function stopTalk() {
-    pbp.stopTalk(hangout.getLocalParticipant());
+    var localParticipantName = hangout.getLocalParticipant().getName();
+    pbp.doneTalkin(localParticipantName);
 }
