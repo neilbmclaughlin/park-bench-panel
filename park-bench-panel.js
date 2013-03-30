@@ -67,9 +67,7 @@ var participantMapper = function(gapi) {
     return function(googleParticipant) {
         
         var repositoryUpdatehandler = function(updateDetails) {
-            var delta = {};
-            delta[updateDetails.id] = updateDetails.currentStatus;
-            gapi.hangout.data.submitDelta(delta);
+            gapi.hangout.data.setValue(updateDetails.id, updateDetails.currentStatus);
         };
 
         return participant({
@@ -120,23 +118,29 @@ var hangoutWrapper = function(gapi) {
 };
 
 var renderer = function() {
-    return {
-        add: function(name, status) {
-            var listName = '#' + status + 'List';
-            $(listName).append($('<li/>').text(name));
-        },
-        remove: function(name, status) {
-            var listName = '#' + status + 'List';
-            $(listName + ' li:contains("' + name + '")').remove();
-        },
-        move: function(name, oldStatus, newStatus) {
-            this.remove(name, oldStatus);
-            this.add(name, newStatus);
-        },
 
+    var add = function(name, status) {
+        var listName = '#' + status + 'List';
+        $(listName).append($('<li/>').text(name));
+    };
+        
+    var remove = function(name, status) {
+        var listName = '#' + status + 'List';
+        $(listName + ' li:contains("' + name + '")').remove();
+    }; 
+        
+    var move = function(name, oldStatus, newStatus) {
+        remove(name, oldStatus);
+        add(name, newStatus);
+    };
+
+    return {
+        add: add,
+        remove: remove,
+        move: move,
         statusChangedEventHandler: function(spec) {
-            this.move(spec.name, spec.lastStatus, spec.currentStatus);
-        }
+            move(spec.name, spec.lastStatus, spec.currentStatus);
+        },
     };
 };
 

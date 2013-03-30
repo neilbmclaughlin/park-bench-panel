@@ -1,4 +1,4 @@
-var hangout = new hangoutWrapper();
+var hangout = hangoutWrapper(gapi);
 var renderer = renderer();
 var pbp = parkBenchPanel(hangout, renderer);
 
@@ -7,9 +7,11 @@ $(document).ready(function() {
 });
 
 function startTalk() {
-    pbp.gotSomethingToSay(hangout.getLocalParticipant());
+    var localParticipantName = hangout.getLocalParticipant().getName();
+    pbp.gotSomethingToSay(localParticipantName);
 }
 
 function stopTalk() {
-    pbp.doneTalkin(hangout.getLocalParticipant());
+    var localParticipantName = hangout.getLocalParticipant().getName();
+    pbp.doneTalkin(localParticipantName);
 }

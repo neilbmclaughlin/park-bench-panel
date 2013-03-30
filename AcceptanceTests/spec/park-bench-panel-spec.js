@@ -32,7 +32,7 @@ describe("A participant mapper", function() {
         var fakeGoogleApi = {
             hangout : {
                 data: {
-                    submitDelta:  jasmine.createSpy('submitDelta'),
+                    setValue:  jasmine.createSpy('setValue'),
                     getValue:  jasmine.createSpy('getValue').andReturn('listener'),
                 },
             },
@@ -77,7 +77,7 @@ describe("A hangout wrapper", function() {
             onParticipantsAdded : { add : function(f) { newParticipantHandler = f; } },
             data: {
                 onStateChanged : { add : jasmine.createSpy('onStateChanged.add') },
-                submitDelta:  jasmine.createSpy('submitDelta'),
+                setValue:  jasmine.createSpy('setValue'),
                 getValue : jasmine.createSpy('getValue').andReturn('listener'),
 
             },
@@ -109,7 +109,7 @@ describe("A hangout wrapper", function() {
                 onParticipantsAdded : { add : jasmine.createSpy('onParticipantsAdded.add') },
                 data: {
                     onStateChanged : { add : function(f) { statusChangedHandler = f} },
-                    submitDelta:  jasmine.createSpy('submitDelta'),
+                    setValue:  jasmine.createSpy('setValue'),
                     getValue : jasmine.createSpy('getValue').andReturn('listener'),
     
                 },
@@ -129,7 +129,7 @@ describe("A hangout wrapper", function() {
             
             it("then the repository should not be called", function() {     
                 expect(subscriberStatusChangedHandler.callCount).toEqual(1);
-                expect(fakeGoogleHangout.data.submitDelta).not.toHaveBeenCalled();
+                expect(fakeGoogleHangout.data.setValue).not.toHaveBeenCalled();
             });
 
         
@@ -527,7 +527,7 @@ describe("A Park Bench Panel", function() {
                         getValue: jasmine.createSpy('getValue').andCallFake(function(value) {
                             return stateList[value];
                         }),
-                        submitDelta: jasmine.createSpy('submitDelta'),
+                        setValue: jasmine.createSpy('setValue'),
                     },
                 };
                 hangout = hangoutWrapper({

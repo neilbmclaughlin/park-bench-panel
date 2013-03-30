@@ -1,99 +1,87 @@
-function hangoutWrapper() {
 
-    var participants = [
-    {
-        id: 1,
-        person: {
-            displayName: 'Bob (1)',
-        },
-        statusHistory : [  'listener' ]
+getFakeHangout = function() {
 
-    }, {
-        id: 2,
-        person: {
-            displayName: 'Fred (2)',
-        },
-        statusHistory : [  'listener' ]
-    }, {
-        id: 3,
-        person: {
-            displayName: 'Bill (3)',
-        },
-        statusHistory : [  'listener' ]
-    }, {
-        id: 4,
-        person: {
-            displayName: 'Joe (4)',
-        },
-        statusHistory : [  'listener' ]
-    }, {
-        id: 5,
-        person: {
-            displayName: 'Alf (5)',
-        },
-        statusHistory : [  'listener' ]
-    }];
-
-    var that = this;
-
-    this.getParticipants = function() {
-        return participants;
-    };
-
-    this.isHangoutApiReady = function() {
-        return true;
-    };
-
-    this.addOnApiReadyCallback = function(f) {};
-
-    this.getLocalParticipant = function() {
-        return jQuery.grep(participants, function(p){
-            return (p.person.displayName == $('#localParticipantSelect').val() );
-        })[0];
-    };
-
-    this.addOnNewParticipantCallback = function(f) {
-        this.newParticipantCallBack = f
-    }
-
-    this.addOnStateChangedCallback = function(f) {
-        this.stateChangedCallBack = f        
-    }
+    var stateList = [
+        { '1' : 'listener' },
+        { '2' : 'listener' },
+        { '3' : 'listener' },
+        { '4' : 'listener' },
+        { '5' : 'listener' },
+        { '6' : 'listener' }
+    ];
     
-    this.clearParticipantStatus = function(participantId) {}
-
-    this.setParticipantStatus = function(delta) {
-        $.each(participants, function(i, p){
-            if ( delta[p.id] != undefined ) {
-                p.statusHistory = delta[p.id];
+    var getParticipants = function() {
+        return [
+            {
+                id: 1,
+                person: {
+                    displayName: 'Bob (1)',
+                },
+        
+            }, {
+                id: 2,
+                person: {
+                    displayName: 'Fred (2)',
+                },
+            }, {
+                id: 3,
+                person: {
+                    displayName: 'Bill (3)',
+                },
+            }, {
+                id: 4,
+                person: {
+                    displayName: 'Joe (4)',
+                },
+            }, {
+                id: 5,
+                person: {
+                    displayName: 'Alf (5)',
+                },
             }
-        });
-        that.stateChangedCallBack(null);
-    }
+        ];        
+    };
+    var participantEventHandlerSpy, stateChangedHandlerSpy;
+    var participants;
 
-    this.displayNotice = function(message) {
-        alert(message);
-    }
-
-    this.addTestParticipant = function() {
-        var id = $('#participantId').val() * 1;
-        var p = {
-            id : id,
-            person: {
-                displayName : $('#displayName').val() + ' (' + id + ')',
+    return {
+        isApiReady: function() { return true; },
+        getParticipants: function() { 
+            participants = getParticipants();
+            return participants;
+        },
+        onParticipantsAdded: {
+            add: function(f) {
+                participantEventHandlerSpy = f;
+            }
+        },
+        data: {
+            onStateChanged: {
+                add: function(f) {
+                    stateChangedHandlerSpy = f;
+                }
             },
-            statusHistory : [  'listener' ]
-        };
-        participants.push(p);
-        that.newParticipantCallBack({
-            addedParticipants: [p]
-        });
-    }
-    
-    this.populateSelectList = function() {
-        $.each(participants, function(i, p){
-            $('#localParticipantSelect').append('<option>' + p.person.displayName + '</option>');
-        });
-       
-    }
-}
+            getValue: function(key) {
+                return stateList[key];
+            },
+            setValue: function(key, value) {
+                return stateList[key] = value;
+            },
+        },
+        getLocalParticipant : function() {
+            var localParticipant = jQuery.grep(participants, function(p){
+                return (p.person.displayName == $('#localParticipantSelect').val() );
+            })[0];
+            var mapper = participantMapper(gapi);
+            return mapper(localParticipant);
+        },        
+        populateSelectList : function() {
+            $.each(participants, function(i, p){
+                $('#localParticipantSelect').append('<option>' + p.person.displayName + '</option>');
+            });
+        },
+        
+    };
+};
+
+gapi = { hangout : getFakeHangout() };
