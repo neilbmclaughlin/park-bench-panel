@@ -1,5 +1,5 @@
 var hangout = hangoutWrapper(gapi);
-var renderer = renderer();
+var renderer = testingRenderer();
 var pbp = parkBenchPanel(hangout, renderer);
 
 $(document).ready(function() {

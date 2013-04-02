@@ -11,6 +11,13 @@ Function.prototype.method = function(name, func) {
     return this;
 };
 
+// Object.method('superior', function (name) {
+//     //var that = this, method = that[name];
+//     return function () {
+//         return null; //method.apply(that, arguments);
+//     };
+// });
+
 if (!Array.prototype.last) {
     Array.prototype.last = function() {
         return this[this.length - 1];
@@ -22,6 +29,9 @@ if (!Array.prototype.first) {
         return this[0];
     };
 }
+
+
+
 
 var participant = function(spec) {
 
@@ -112,7 +122,8 @@ var hangoutWrapper = function(gapi) {
             return $.map(gapi.hangout.getParticipants(), participantMapper(gapi));
         },
         getLocalParticipant: function() {
-            return gapi.hangout.getLocalParticipant();
+            var mapper = participantMapper(gapi);
+            return mapper(gapi.hangout.getLocalParticipant());
         },
     };
 };

@@ -1,5 +1,5 @@
 
-getFakeHangout = function() {
+var getFakeHangout = function() {
 
     var stateList = [
         { '1' : 'listener' },
@@ -75,13 +75,48 @@ getFakeHangout = function() {
             var mapper = participantMapper(gapi);
             return mapper(localParticipant);
         },        
-        populateSelectList : function() {
-            $.each(participants, function(i, p){
-                $('#localParticipantSelect').append('<option>' + p.person.displayName + '</option>');
-            });
-        },
+        addTestParticipant : function() {
+          var id = $('#participantId').val() * 1;
+          var p = {
+              person: {
+                  id : id,
+                  displayName : $('#displayName').val() + ' (' + id + ')',
+              },
+          };
+          participants.push(p);
+          participantEventHandlerSpy([p]);
+      },
         
     };
+};
+
+var testingRenderer = function() {
+    
+    var that = renderer();
+    
+    var super_add = that.add;
+    var super_remove = that.remove;
+    
+    that.add = function(name, status) {
+        super_add(name, status);
+        $('#localParticipantSelect').append('<option>' + name + '</option>');
+    };
+
+    that.remove = function(name, status) {
+        super_remove(name, status);
+        $("#localParticipantSelect option[value='" + name + "']").remove();
+    };
+
+    that.move = function(name, oldStatus, newStatus) {
+        that.remove(name, oldStatus);
+        that.add(name, newStatus);
+    };
+
+    that.statusChangedEventHandler = function(spec) {
+        that.move(spec.name, spec.lastStatus, spec.currentStatus);
+    };
+
+    return that;
 };
 
 gapi = { hangout : getFakeHangout() };
