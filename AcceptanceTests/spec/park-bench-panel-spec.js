@@ -4,7 +4,7 @@ var getPbpParticipants = function(spec) {
         spec.nameList.split(','),
         function(n, i) { return participant( {
             name : n,
-            id : i + 1,
+            id : (i + 1).toString(),
             status : spec.status,
             statusChangedEventHandlers : spec.statusChangedEventHandlers || []
         } ) }
@@ -16,7 +16,7 @@ var getGoogleParticipants = function(nameList) {
         nameList.split(','),
         function(n, i) { return { 
             person : { 
-                id : i + 1, //TODO: decide if we need to use person.id or id
+                id : (i + 1).toString(), //TODO: decide if we need to use person.id or id
                 displayName : n,
                 }, 
             };
@@ -44,10 +44,10 @@ describe("A participant mapper", function() {
         var participant = mapper(googleParticipant);
         
         //Assert        
-        expect(participant.getId()).toEqual(1);
+        expect(participant.getId()).toEqual('1');
         expect(participant.getName()).toEqual('Bob');
         expect(participant.getStatus()).toEqual('listener');
-
+        expect(fakeGoogleApi.hangout.data.getValue).toHaveBeenCalledWith('1');
     });
     
 });

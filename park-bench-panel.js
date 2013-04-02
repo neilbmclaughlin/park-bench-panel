@@ -83,7 +83,7 @@ var participantMapper = function(gapi) {
         return participant({
             id: googleParticipant.person.id,
             name: googleParticipant.person.displayName,
-            status: gapi.hangout.data.getValue([googleParticipant.person.id]),
+            status: gapi.hangout.data.getValue(googleParticipant.person.id),
             statusChangedEventHandlers: [ repositoryUpdatehandler ],
         });
     };
