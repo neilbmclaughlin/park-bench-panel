@@ -86,7 +86,7 @@ describe("A hangout wrapper", function() {
         hangout.start(newParticipantsJoined, stateChanged, init);
         
         //Act
-        newParticipantHandler(googleParticipants);
+        newParticipantHandler({ addedParticipants : googleParticipants });
 
         //Assert
         expect(newParticipantsJoined.callCount).toEqual(1);
@@ -504,7 +504,7 @@ describe("A Park Bench Panel", function() {
 
                 pGoogleParticipants = getGoogleParticipants('Bob,Fred');
 
-                participantAddedEvent = [pGoogleParticipants[0]];
+                participantAddedEvent =  { addedParticipants : [pGoogleParticipants[0]] };
 
                 fakeRenderer = jasmine.createSpyObj('renderer', ['statusChangedEventHandler', 'add', 'move']);
 

@@ -1,3 +1,5 @@
+
+
 if (typeof Object.create !== 'function') {
     Object.create = function(o) {
         function F() {}
@@ -232,11 +234,11 @@ var parkBenchPanel = function(repo, renderer) {
                 participants.push(p);
             });
         },
-        otherParticipantsChangedStatus: function(stateChangedEvents) {
+        otherParticipantsChangedStatus: function(stateChangedEvent) {
             //stateChangedEvents is more complicated
             //? use stateChangedEvents.state
             //also check that newParticipantsJoined is working correctly
-            $.each(stateChangedEvents, function(i, e) {
+            $.each(stateChangedEvent, function(i, e) {
                 for(var id in e)
                 {
                     getParticipantById(id).setStatus(e[id]);
