@@ -238,7 +238,7 @@ var parkBenchPanel = function(repo, renderer) {
             //stateChangedEvents is more complicated
             //? use stateChangedEvents.state
             //also check that newParticipantsJoined is working correctly
-            $.each(stateChangedEvent, function(i, e) {
+            $.each(stateChangedEvent.state, function(i, e) {
                 for(var id in e)
                 {
                     getParticipantById(id).setStatus(e[id]);
