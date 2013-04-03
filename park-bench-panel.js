@@ -92,10 +92,9 @@ var participantMapper = function(gapi) {
 var hangoutWrapper = function(gapi) {
 
     var getWrappedHandler = function(f) {
-        
-        return function(googleParticipants) {
+        return function(newParticipantEvent) {
             var mapper = participantMapper(gapi);
-            var pbpParticipants = $.map(googleParticipants, mapper);
+            var pbpParticipants = $.map(newParticipantEvent.addedParticipants, mapper);
             f(pbpParticipants);
         };
     };
@@ -234,6 +233,9 @@ var parkBenchPanel = function(repo, renderer) {
             });
         },
         otherParticipantsChangedStatus: function(stateChangedEvents) {
+            //stateChangedEvents is more complicated
+            //? use stateChangedEvents.state
+            //also check that newParticipantsJoined is working correctly
             $.each(stateChangedEvents, function(i, e) {
                 for(var id in e)
                 {
