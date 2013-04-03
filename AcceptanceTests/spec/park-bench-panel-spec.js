@@ -563,7 +563,7 @@ describe("A Park Bench Panel", function() {
             describe("raising a new state changed event", function() {
                 
                 beforeEach(function() {
-                    stateChangedHandlerSpy([{ '2' : 'speaker'}]);
+                    stateChangedHandlerSpy({ state : { '2' : 'speaker'} } );
                 });
 
                 it("then the status of the participant is updated", function() {
