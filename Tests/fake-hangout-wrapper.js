@@ -1,41 +1,40 @@
 
 var getFakeHangout = function() {
 
-    var stateList = [
-        { '1' : 'listener' },
-        { '2' : 'listener' },
-        { '3' : 'listener' },
-        { '4' : 'listener' },
-        { '5' : 'listener' },
-        { '6' : 'listener' }
-    ];
+    var stateList = {
+         '1' : 'listener',
+         '2' : 'listener',
+         '3' : 'listener',
+         '4' : 'listener',
+         '5' : 'listener',
+         '6' : 'listener'
+    };
     
     var getParticipants = function() {
         return [
             {
-                id: 1,
                 person: {
+                    id: '1',
                     displayName: 'Bob (1)',
-                },
-        
+                },        
             }, {
-                id: 2,
                 person: {
+                    id: '2',
                     displayName: 'Fred (2)',
                 },
             }, {
-                id: 3,
                 person: {
+                    id: '3',
                     displayName: 'Bill (3)',
                 },
             }, {
-                id: 4,
                 person: {
+                    id: '4',
                     displayName: 'Joe (4)',
                 },
             }, {
-                id: 5,
                 person: {
+                    id: '5',
                     displayName: 'Alf (5)',
                 },
             }
@@ -72,8 +71,7 @@ var getFakeHangout = function() {
             var localParticipant = jQuery.grep(participants, function(p){
                 return (p.person.displayName == $('#localParticipantSelect').val() );
             })[0];
-            var mapper = participantMapper(gapi);
-            return mapper(localParticipant);
+            return localParticipant;
         },        
         addTestParticipant : function() {
           var id = $('#participantId').val() * 1;
@@ -84,7 +82,7 @@ var getFakeHangout = function() {
               },
           };
           participants.push(p);
-          participantEventHandlerSpy([p]);
+          participantEventHandlerSpy( { addedParticipants : [p] });
       },
         
     };
@@ -118,5 +116,35 @@ var testingRenderer = function() {
 
     return that;
 };
+
+var testingCanvasRenderer = function() {
+    
+    var that = canvasRenderer();
+    
+    var super_add = that.add;
+    var super_remove = that.remove;
+    
+    that.add = function(name, status) {
+        super_add(name, status);
+        $('#localParticipantSelect').append('<option>' + name + '</option>');
+    };
+
+    that.remove = function(name, status) {
+        super_remove(name, status);
+        $("#localParticipantSelect option[value='" + name + "']").remove();
+    };
+
+    that.move = function(name, oldStatus, newStatus) {
+        that.remove(name, oldStatus);
+        that.add(name, newStatus);
+    };
+
+    that.statusChangedEventHandler = function(spec) {
+        that.move(spec.name, spec.lastStatus, spec.currentStatus);
+    };
+
+    return that;
+};
+
 
 gapi = { hangout : getFakeHangout() };

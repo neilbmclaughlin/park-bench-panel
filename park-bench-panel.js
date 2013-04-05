@@ -156,6 +156,38 @@ var renderer = function() {
     };
 };
 
+var canvasRenderer = function() {
+
+    var getCircleName = function(status) {
+        return '#' + status + 'Circle';        
+    }
+
+    var add = function(name, status) {
+        var circleName = getCircleName(status);
+        //$(circleName).append($('<li/>').text(name));
+    };
+        
+    var remove = function(name, status) {
+        var circleName = getCircleName(status);
+        //$(listName + ' li:contains("' + name + '")').remove();
+    }; 
+        
+    var move = function(name, oldStatus, newStatus) {
+        remove(name, oldStatus);
+        add(name, newStatus);
+    };
+
+    return {
+        add: add,
+        remove: remove,
+        move: move,
+        statusChangedEventHandler: function(spec) {
+            move(spec.name, spec.lastStatus, spec.currentStatus);
+        },
+    };
+};
+
+
 var parkBenchPanel = function(repo, renderer) {
 
     var participantRepo = repo;
