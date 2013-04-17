@@ -10,10 +10,7 @@ h1 {
     padding-left: .5em;
     margin: .5em;
     color: white;
-}
-
-h1 { 
-    font-size:1.25em;
+    font-size:1.1em;
 }
 
 ul{
@@ -39,7 +36,7 @@ input[type='button'] {
     background:LightBlue; 
     border:1px solid blue; 
     margin:.2em; 
-    border-radius:2px; 
+    border-radius:7px; 
     text-align:center; 
     padding:.2em 4em;
 }
