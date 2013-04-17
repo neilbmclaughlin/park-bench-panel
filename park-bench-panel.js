@@ -133,12 +133,15 @@ var renderer = function() {
 
     var add = function(name, status) {
         var listName = '#' + status + 'List';
-        $(listName).append($('<li/>').text(name));
+        $(listName).append($('<li/>').fadeIn(500).text(name));
     };
         
     var remove = function(name, status) {
         var listName = '#' + status + 'List';
-        $(listName + ' li:contains("' + name + '")').remove();
+        var listItem = $(listName + ' li:contains("' + name + '")');
+        listItem.slideUp(500, 'linear', function () { $(this).remove();});
+        
+        //listItem.fadeOut(100, function() { listItem.remove() });
     }; 
         
     var move = function(name, oldStatus, newStatus) {
@@ -160,13 +163,33 @@ var canvasRenderer = function() {
 
     var getCircleName = function(status) {
         return '#' + status + 'Circle';        
-    }
+    };
 
     var add = function(name, status) {
-        var circleName = getCircleName(status);
-        //$(circleName).append($('<li/>').text(name));
-    };
+        var listeningGroup = canvas.getObjects()[0];
+        var position = (listeningGroup.getObjects().length + 1) * 30;
+        var text = new fabric.Text(name, {
+            top: position,
+            fontSize: 20,
+            fontFamily: 'Courier New',
+            textAlign: 'right'
+        });
+        var rect = new fabric.Rect({
+            top: position,
+            fill: 'red',
+            width: 200,
+            height: 20,
+            rx: 10,
+            strokeWidth: 2,
+            stroke: 'blue'
+            //ry: 20
+        });
+        var participantGroup = new fabric.Group([rect, text], {left: 150});
         
+        listeningGroup.add(participantGroup);
+        canvas.renderAll();
+    };
+            
     var remove = function(name, status) {
         var circleName = getCircleName(status);
         //$(listName + ' li:contains("' + name + '")').remove();

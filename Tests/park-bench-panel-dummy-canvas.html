@@ -10,6 +10,7 @@
       -->
       <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
       <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+      <script src="https://raw.github.com/kangax/fabric.js/master/dist/all.js"></script>
 <!--PBP SCRIPT BLOCK START-->
 <link rel="stylesheet" type="text/css" href="https://c9.io/neilbmclaughlin/park-bench-panel/workspace/Content/park-bench-panel.css"></link>
 <script src="https://c9.io/neilbmclaughlin/park-bench-panel/workspace/Tests/fake-hangout-wrapper.js"></script>
@@ -20,31 +21,6 @@
 
     <body>
         <canvas id="myCanvas" width="578" height="200"></canvas>
-        <script>
-        //http://fabricjs.com/fabric-intro-part-3/#groups
-          var canvas = document.getElementById('myCanvas');
-          var context = canvas.getContext('2d');
-          var centerX = canvas.width;
-          var centerY = canvas.height / 2;
-          var radius = 70;
-    
-          context.beginPath();
-          context.arc(centerX / 4, centerY, radius, 0, 2 * Math.PI, false);
-          context.fillStyle = 'green';
-          context.fill();
-          context.lineWidth = 5;
-          context.strokeStyle = '#003300';
-          context.stroke();
-
-          context.beginPath();
-          context.arc(( centerX / 4 ) * 3, centerY, radius, 0, 2 * Math.PI, false);
-          context.fillStyle = 'red';
-          context.fill();
-          context.lineWidth = 5;
-          context.strokeStyle = '#003300';
-          context.stroke();
-
-        </script>
     
         <div style="width : 100%">
     

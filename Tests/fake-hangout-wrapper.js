@@ -102,7 +102,7 @@ var testingRenderer = function() {
 
     that.remove = function(name, status) {
         super_remove(name, status);
-        $("#localParticipantSelect option[value='" + name + "']").remove();
+        $("#localParticipantSelect option:contains('" + name + "')").remove();
     };
 
     that.move = function(name, oldStatus, newStatus) {

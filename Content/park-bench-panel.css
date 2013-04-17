@@ -1,23 +1,18 @@
-.button {
-  border-radius: 3px;
-  -moz-border-radius: 3px;
-  background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ddd));
-  background: -moz-linear-gradient(top, #fff, #ddd);  
-  border: 1px solid #bbb;
-}
-
-.button:active {
-        background: -webkit-gradient(linear, left top, left bottom, from(#aaa), to(#333)); 
-        background: -moz-linear-gradient(bottom, #ddd, #aaa); 
-}
-
-#draggable { width: 150px; height: 150px; padding: 0.5em; }
-
 h1 { padding: .2em; margin: 0; }
 
-/* style the list to maximize the droppable hitarea */
-/*
-#listenerList { float:left; width: 500px; margin-right: 2em; }
-#speakerList { width: 200px; float: left; margin-top: 1em; }
-#speakerList ul { margin: 0; padding: 1em 0 1em 3em; }
-*/
+ul{list-style-type:none; width:15em;}
+ul li{ border:1px solid blue; margin:.2em; border-radius:5em; text-align:center; padding:.2em 4em;}
+ul li:hover, ul li:focus, ul li:active{ opacity:.5;}
+
+#listenerList li{background:red;}
+#waitingList li{background:orange;}
+#speakerList li{background:green;}
+
+input[type='button'] {
+    background:LightBlue; 
+    border:1px solid blue; 
+    margin:.2em; 
+    border-radius:2px; 
+    text-align:center; 
+    padding:.2em 4em;
+}
