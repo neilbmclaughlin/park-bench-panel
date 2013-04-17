@@ -140,8 +140,6 @@ var renderer = function() {
         var listName = '#' + status + 'List';
         var listItem = $(listName + ' li:contains("' + name + '")');
         listItem.slideUp(500, 'linear', function () { $(this).remove();});
-        
-        //listItem.fadeOut(100, function() { listItem.remove() });
     }; 
         
     var move = function(name, oldStatus, newStatus) {

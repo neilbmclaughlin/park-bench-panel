@@ -190,6 +190,7 @@ describe("A list renderer", function() {
     };
 
     beforeEach(function() {
+        $.fx.off = true; //Turn jQuery animations off to prevent timing issues
         r = renderer();
         $("#speakerList").empty();
         $("#waitingList").empty();

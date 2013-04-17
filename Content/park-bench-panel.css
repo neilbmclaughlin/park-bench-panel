@@ -26,7 +26,7 @@ ul li{
     margin:.2em;
     border-radius:5em;
     text-align:center;
-    padding:.2em 4em;
+    padding:.2em .2em;
 }
 
 ul li:hover, ul li:focus, ul li:active{ opacity:.5;}
