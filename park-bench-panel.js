@@ -277,7 +277,7 @@ var parkBenchPanel = function(repo, renderer) {
         },
         gotSomethingToSay: function(localParticipantName) {
             var participant = getParticipantByName(localParticipantName);
-            var status = (getParticipantCounts().speaker < 3 ? 'speaker' : 'waiting');
+            var status = (getParticipantCounts().speaker < 2 ? 'speaker' : 'waiting');
             participant.setStatus(status);
         },
         doneTalkin: function(localParticipantName) {
