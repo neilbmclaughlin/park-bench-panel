@@ -1,4 +1,3 @@
-
 var getFakeHangout = function() {
 
     var stateList = {
@@ -15,34 +14,36 @@ var getFakeHangout = function() {
             {
                 person: {
                     id: '1',
-                    displayName: 'Bob (1)',
+                    displayName: 'Bob',
                 },        
             }, {
                 person: {
                     id: '2',
-                    displayName: 'Fred (2)',
+                    displayName: 'Fred',
                 },
             }, {
                 person: {
                     id: '3',
-                    displayName: 'Bill (3)',
+                    displayName: 'Bill',
                 },
             }, {
                 person: {
                     id: '4',
-                    displayName: 'Joe (4)',
+                    displayName: 'Joe',
                 },
             }, {
                 person: {
                     id: '5',
-                    displayName: 'Alf (5)',
+                    displayName: 'Alf',
                 },
             }
         ];        
     };
     var participantEventHandlerSpy, stateChangedHandlerSpy;
     var participants;
-
+    
+    var localParticipant = getParticipants()[0]; 
+    
     return {
         isApiReady: function() { return true; },
         getParticipants: function() { 
@@ -68,17 +69,22 @@ var getFakeHangout = function() {
             },
         },
         getLocalParticipant : function() {
-            var localParticipant = jQuery.grep(participants, function(p){
-                return (p.person.displayName == $('#localParticipantSelect').val() );
-            })[0];
+            // var localParticipant = jQuery.grep(participants, function(p){
+            //     return (p.person.displayName == $('#localParticipantSelect').val() );
+            // })[0];
             return localParticipant;
-        },        
+        },
+        participantSelectChanged : function() {
+            localParticipant = jQuery.grep(participants, function(p){
+                return (p.person.id == $('#localParticipantSelect').val() );
+            })[0];            
+        },
         addTestParticipant : function() {
-          var id = $('#participantId').val() * 1;
+          var id = participants.length + 1;
           var p = {
               person: {
                   id : id,
-                  displayName : $('#displayName').val() + ' (' + id + ')',
+                  displayName : $('#displayName').val(),
               },
           };
           participants.push(p);
@@ -95,23 +101,30 @@ var testingRenderer = function() {
     var super_add = that.add;
     var super_remove = that.remove;
     
-    that.add = function(name, status) {
-        super_add(name, status);
-        $('#localParticipantSelect').append('<option>' + name + '</option>');
+    that.add = function(participant) {
+        super_add(participant);
+        var selectList = $('#localParticipantSelect');
+        $('<option/>')
+        .text(participant.getName())
+        .attr({
+            'selected' : participant.isLocal(),
+            'value' : participant.getId()
+        })
+        .appendTo(selectList);
     };
 
-    that.remove = function(name, status) {
-        super_remove(name, status);
-        $("#localParticipantSelect option:contains('" + name + "')").remove();
+    that.remove = function(participant, oldStatus) {
+        super_remove(participant, oldStatus);
+        $('#localParticipantSelect option[value=' + participant.getId() + ']').remove();;
     };
 
-    that.move = function(name, oldStatus, newStatus) {
-        that.remove(name, oldStatus);
-        that.add(name, newStatus);
+    that.move = function(participant, oldStatus) {
+        that.remove(participant, oldStatus);
+        that.add(participant);
     };
 
     that.statusChangedEventHandler = function(spec) {
-        that.move(spec.name, spec.lastStatus, spec.currentStatus);
+        that.move(spec.participant, spec.lastStatus);
     };
 
     return that;

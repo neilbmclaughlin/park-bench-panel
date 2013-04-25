@@ -26,6 +26,11 @@ ul li{
     padding:.2em .2em;
 }
 
+ul li.localParticipant {
+    font-weight:bold;
+    font-style:italic
+}
+
 ul li:hover, ul li:focus, ul li:active{ opacity:.5;}
 
 #listenerList li{background:red;}

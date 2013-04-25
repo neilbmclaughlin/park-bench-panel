@@ -52,13 +52,19 @@ var participant = function(spec) {
         return spec.status;
     };
 
+    that.isLocal = function() {
+        return spec.local;
+    };
+
     that.setStatus = function(status) {
         var lastStatus = spec.status;
         spec.status = status;
         $.each(statusChangedEventHandlers, function(i, h) {
             h({
+                participant : that,
                 id: that.getId(),
                 name: that.getName(),
+                local: that.isLocal(),
                 lastStatus: lastStatus,
                 currentStatus: that.getStatus()
             });
@@ -86,6 +92,7 @@ var participantMapper = function(gapi) {
             id: googleParticipant.person.id,
             name: googleParticipant.person.displayName,
             status: gapi.hangout.data.getValue(googleParticipant.person.id),
+            local: gapi.hangout.getLocalParticipant().person.id == googleParticipant.person.id,
             statusChangedEventHandlers: [ repositoryUpdatehandler ],
         });
     };
@@ -131,20 +138,25 @@ var hangoutWrapper = function(gapi) {
 
 var renderer = function() {
 
-    var add = function(name, status) {
-        var listName = '#' + status + 'List';
-        $(listName).append($('<li/>').fadeIn(500).text(name));
+    var add = function(participant) {
+        var className = ( participant.isLocal() ? 'localParticipant' : '')
+        var listName = '#' + participant.getStatus() + 'List';
+        $(listName)
+            .append($('<li/>')
+            .addClass(className)
+            .fadeIn(500)
+            .text(participant.getName()));
     };
         
-    var remove = function(name, status) {
-        var listName = '#' + status + 'List';
-        var listItem = $(listName + ' li:contains("' + name + '")');
+    var remove = function(participant, oldStatus) {
+        var listName = '#' + oldStatus + 'List';
+        var listItem = $(listName + ' li:contains("' + participant.getName() + '")');
         listItem.slideUp(500, 'linear', function () { $(this).remove();});
     }; 
         
-    var move = function(name, oldStatus, newStatus) {
-        remove(name, oldStatus);
-        add(name, newStatus);
+    var move = function(participant, oldStatus) {
+        remove(participant, oldStatus);
+        add(participant);
     };
 
     return {
@@ -152,7 +164,7 @@ var renderer = function() {
         remove: remove,
         move: move,
         statusChangedEventHandler: function(spec) {
-            move(spec.name, spec.lastStatus, spec.currentStatus);
+            move(spec.participant, spec.lastStatus);
         },
     };
 };

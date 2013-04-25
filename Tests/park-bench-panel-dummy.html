@@ -11,7 +11,7 @@
       <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
       <!--PBP SCRIPT BLOCK START-->
 <link rel="stylesheet" type="text/css" href="https://c9.io/neilbmclaughlin/park-bench-panel/workspace/Content/park-bench-panel.css"></link>
-<script src="https://c9.io/neilbmclaughlin/park-bench-panel/workspace/Tests/fake-hangout-wrapper.js"></script>
+<script src="https://c9.io/neilbmclaughlin/park-bench-panel/workspace/Tests/fake-hangout.js"></script>
 <script src="https://c9.io/neilbmclaughlin/park-bench-panel/workspace/park-bench-panel.js"></script>
 <script src="https://c9.io/neilbmclaughlin/park-bench-panel/workspace/Tests/park-bench-panel-init.js"></script>      <!--PBP SCRIPT BLOCK END-->
     </head>
@@ -37,14 +37,12 @@
 
             <div>
                 <label for="localParticipantSelect">Current local participant</label>
-                <select id="localParticipantSelect"><option>Select local participant ...</option></select>
+                <select id="localParticipantSelect" onchange="gapi.hangout.participantSelectChanged();"></select>
             </div>
 
             <div>
                 <label for="displayName">Name</label>
                 <input class="text" type="text" id="displayName">
-                <label for="participantId">Id</label>
-                <input class="text" type="text" id="participantId">
                 <input class="button" type="button" value="Add new participant" id="btnAddParticipant" onClick="gapi.hangout.addTestParticipant()"></input>
             </div>
             
