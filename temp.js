@@ -1,4 +1,159 @@
+var getFakeHangout = function() {
 
+    var stateList = [];
+    
+    var getParticipants = function() {
+        return [
+            {
+                person: {
+                    id: '1',
+                    displayName: 'Bob',
+                },        
+            }, {
+                person: {
+                    id: '2',
+                    displayName: 'Fred',
+                },
+            }, {
+                person: {
+                    id: '3',
+                    displayName: 'Bill',
+                },
+            }, {
+                person: {
+                    id: '4',
+                    displayName: 'Joe',
+                },
+            }, {
+                person: {
+                    id: '5',
+                    displayName: 'Alf',
+                },
+            }
+        ];        
+    };
+    var participantEventHandlerSpy, stateChangedHandlerSpy;
+    var participants;
+    
+    var localParticipant = getParticipants()[0]; 
+    
+    return {
+        isApiReady: function() { return true; },
+        getParticipants: function() { 
+            participants = getParticipants();
+            return participants;
+        },
+        onParticipantsAdded: {
+            add: function(f) {
+                participantEventHandlerSpy = f;
+            }
+        },
+        data: {
+            onStateChanged: {
+                add: function(f) {
+                    stateChangedHandlerSpy = f;
+                }
+            },
+            getValue: function(key) {
+                return stateList[key];
+            },
+            setValue: function(key, value) {
+                stateList[key] = value;
+            },
+        },
+        getLocalParticipant : function() {
+            // var localParticipant = jQuery.grep(participants, function(p){
+            //     return (p.person.displayName == $('#localParticipantSelect').val() );
+            // })[0];
+            return localParticipant;
+        },
+        participantSelectChanged : function() {
+            localParticipant = jQuery.grep(participants, function(p){
+                return (p.person.id == $('#localParticipantSelect').val() );
+            })[0];            
+        },
+        addTestParticipant : function() {
+          var id = participants.length + 1;
+          var p = {
+              person: {
+                  id : id,
+                  displayName : $('#displayName').val(),
+              },
+          };
+          participants.push(p);
+          participantEventHandlerSpy( { addedParticipants : [p] });
+      },
+        
+    };
+};
+
+var testingRenderer = function() {
+    
+    var that = renderer();
+    
+    var super_add = that.add;
+    var super_remove = that.remove;
+    
+    that.add = function(participant) {
+        super_add(participant);
+        var selectList = $('#localParticipantSelect');
+        $('<option/>')
+        .text(participant.getName())
+        .attr({
+            'selected' : participant.isLocal(),
+            'value' : participant.getId()
+        })
+        .appendTo(selectList);
+    };
+
+    that.remove = function(participant, oldStatus) {
+        super_remove(participant, oldStatus);
+        $('#localParticipantSelect option[value=' + participant.getId() + ']').remove();;
+    };
+
+    that.move = function(participant, oldStatus) {
+        that.remove(participant, oldStatus);
+        that.add(participant);
+    };
+
+    that.statusChangedEventHandler = function(spec) {
+        that.move(spec.participant, spec.lastStatus);
+    };
+
+    return that;
+};
+
+var testingCanvasRenderer = function() {
+    
+    var that = canvasRenderer();
+    
+    var super_add = that.add;
+    var super_remove = that.remove;
+    
+    that.add = function(name, status) {
+        super_add(name, status);
+        $('#localParticipantSelect').append('<option>' + name + '</option>');
+    };
+
+    that.remove = function(name, status) {
+        super_remove(name, status);
+        $("#localParticipantSelect option[value='" + name + "']").remove();
+    };
+
+    that.move = function(name, oldStatus, newStatus) {
+        that.remove(name, oldStatus);
+        that.add(name, newStatus);
+    };
+
+    that.statusChangedEventHandler = function(spec) {
+        that.move(spec.name, spec.lastStatus, spec.currentStatus);
+    };
+
+    return that;
+};
+
+
+gapi = { hangout : getFakeHangout() };
 
 if (typeof Object.create !== 'function') {
     Object.create = function(o) {
@@ -38,12 +193,8 @@ if (!Array.prototype.first) {
 var participant = function(spec) {
 
     var that = {};
-    var statusChangedEventHandlers = [];
-    
-    if (spec.statusChangedEventHandlers !== undefined) {
-        statusChangedEventHandlers.push.apply(statusChangedEventHandlers, spec.statusChangedEventHandlers);
-    }
-    
+    var statusChangedEventHandlers = spec.statusChangedEventHandlers || [];
+
     that.getId = function() {
         return spec.id;
     };
@@ -224,6 +375,7 @@ var canvasRenderer = function() {
     };
 };
 
+
 var parkBenchPanel = function(repo, renderer) {
 
     var participantRepo = repo;
@@ -266,32 +418,17 @@ var parkBenchPanel = function(repo, renderer) {
         });
     };
 
-    var getRemoteParticipants = function() {
-        return $.grep(participants, function(p, i) {
-            return p.isLocal() === false;
-        });
-    };
-
-
     var setParticipantsStatusChangedEventHandler = function(participants, eventHandlers) {
         $.each(participants, function(i, p) {
             p.addOnStatusChangedHandlers(eventHandlers);
         });
     };
 
-    var displayRemoteParticipants = function(f) {
-        $.each(getRemoteParticipants(), function(i, p) {
-            f(p);
-        });
-    };
-
     return {
         init: function() {
-            participants = participantRepo.getParticipants(); //Todo: pass the renderer event handler to get participants
+            participants = participantRepo.getParticipants();
             setParticipantsStatusChangedEventHandler(participants, [ participantRenderer.statusChangedEventHandler ] );
-            displayRemoteParticipants(participantRenderer.statusChangedEventHandler );
-            var localParticipant = participantRepo.getLocalParticipant();
-            localParticipant.setStatus('listener');
+            setParticipantsStatus(participants, 'listener');
         },
         gotSomethingToSay: function(localParticipantName) {
             var participant = getParticipantByName(localParticipantName);
@@ -317,22 +454,35 @@ var parkBenchPanel = function(repo, renderer) {
                 participants.push(p);
             });
         },
-        participantLeaves: function(participant) {
-            participant.setStatus(undefined);
-            participants = $.grep(participants, function(p) { return p.getId() != participant.getId() } );
-        },
-        
         otherParticipantsChangedStatus: function(stateChangedEvent) {
             //stateChangedEvents is more complicated
             //? use stateChangedEvents.state
             //also check that newParticipantsJoined is working correctly
             $.each(stateChangedEvent.state, function(id, status) {
                 var p = getParticipantById(id);
-                p.setStatus(status);                    
+                if (p.getStatus() != status) {
+                    p.setStatus(status);                    
+                }
             });
         },
         start: function() {
             repo.start(this.newParticipantsJoined, this.otherParticipantsChangedStatus, this.init);
         }
     };
-};
+};var hangout = hangoutWrapper(gapi);
+var renderer = testingRenderer();
+var pbp = parkBenchPanel(hangout, renderer);
+
+$(document).ready(function() {
+    pbp.start();
+});
+
+function startTalk() {
+    var localParticipantName = hangout.getLocalParticipant().getName();
+    pbp.gotSomethingToSay(localParticipantName);
+}
+
+function stopTalk() {
+    var localParticipantName = hangout.getLocalParticipant().getName();
+    pbp.doneTalkin(localParticipantName);
+}

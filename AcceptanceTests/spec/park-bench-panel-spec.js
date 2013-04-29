@@ -1,22 +1,38 @@
 
-var getPbpParticipants = function(spec) {
-    return $.map(
-        spec.nameList.split(','),
-        function(n, i) {
-            var local = false;
-            if (n[n.length] == '*')
-            {
-                local = true;
-                n = n.substring(0, n.length - 1);
-            }
-            return participant( {
-                name : n,
-                id : (i + 1).toString(),
-                status : spec.status,
-                local : local,
-                statusChangedEventHandlers : spec.statusChangedEventHandlers || []
-        } ) }
-    );
+var getPbpParticipants = function(nameList, fakeHangout) {
+    
+    var googleParticipants = getGoogleParticipants(nameList);
+    var mapper = participantMapper(fakeHangout);
+
+    var pbpParticipants = $.map(googleParticipants, mapper);
+    
+    return pbpParticipants;
+};
+
+var getPbpParticipants2 = function(spec) {
+    
+    var fakeGoogleApi = {
+        hangout : {
+            data: {
+                setValue:  jasmine.createSpy('setValue'),
+                getValue:  jasmine.createSpy('getValue'),
+            },
+            getLocalParticipant : jasmine.createSpy('getLocalParticipant').andReturn({ person : { id : spec.localParticipantId }})
+        },
+    };
+                        
+    var pList = getPbpParticipants(spec.namelist, fakeGoogleApi);
+    $.each(pList, function(i, p) {
+        if (p.getId() != spec.localParticipantId) {
+            p.setStatus(spec.status);
+        }
+    });
+    pList[spec.localParticipantId - 1].setStatus(spec.localParticipantStatus);
+    fakeGoogleApi.hangout.data.setValue.reset();
+    fakeGoogleApi.hangout.data.getValue.reset();
+    fakeGoogleApi.hangout.getLocalParticipant.reset();
+    
+    return { pList : pList, fakeGoogleApi: fakeGoogleApi};
 };
 
 var getGoogleParticipants = function(nameList) {
@@ -405,18 +421,33 @@ describe("A participant", function() {
         //Assert
         expect(p1.getStatus()).toEqual('speaker');
         expect(statusChangedHandler1).toHaveBeenCalledWith({
-            id: p1.getId(),
-            name: p1.getName(),
+            participant: p1,
             lastStatus: 'listener',
-            currentStatus: 'speaker'
         });
         expect(statusChangedHandler2).toHaveBeenCalledWith({
-            id: p1.getId(),
-            name: p1.getName(),
+            participant: p1,
             lastStatus: 'listener',
-            currentStatus: 'speaker'
         });
     });
+
+    it("should not notify subscribers if the status is unchanged", function() {
+        //arrange
+        var p1 = participant({
+            name: 'Bob',
+            id: 1,
+            status: 'listener'
+        });
+        var statusChangedHandler1 = jasmine.createSpy('statusChangedHandler1');
+        p1.addOnStatusChangedHandlers([statusChangedHandler1]);
+
+        //Act
+        p1.setStatus('listener');
+
+        //Assert        
+        expect(p1.getStatus()).toEqual('listener');
+        expect(statusChangedHandler1).not.toHaveBeenCalled();
+    });
+
 });
 
 describe("A Park Bench Panel", function() {
@@ -433,30 +464,43 @@ describe("A Park Bench Panel", function() {
             
     describe("when initialising the park bench panel", function() {
 
-        var pList = [], participantStatusChangedEventHandler;
+        var pList = [], fakeGoogleApi, localParticipantId = 2;
         
         beforeEach(function() {
 
-            participantStatusChangedEventHandler = jasmine.createSpy('statusChangedEventHandler');
-            pList = getPbpParticipants( { nameList: 'Bob,Fred,Bill', statusChangedEventHandlers : [ participantStatusChangedEventHandler ] } );
+            var result = getPbpParticipants2( { 
+                namelist: 'Bob,Fred,Bill',
+                status: 'listener',
+                localParticipantId: localParticipantId,
+                localParticipantStatus: undefined
+            }) ;
+            pList = result.pList;
+            fakeGoogleApi = result.fakeGoogleApi;
+            
+            fakeRepository = jasmine.createSpyObj('repo', ['statusChangedEventHandler','getLocalParticipant', 'getParticipants']);
+            fakeRepository.getParticipants.andReturn(pList);            
+            fakeRepository.getLocalParticipant.andReturn(pList[localParticipantId - 1]);            
 
             fakeRenderer = jasmine.createSpyObj('renderer', ['statusChangedEventHandler', 'add', 'move']);
-            fakeRenderer.statusChangedEventHandler = jasmine.createSpy('statusChangedEventHandler');
-            fakeRepository = jasmine.createSpyObj('repo', ['statusChangedEventHandler', 'getParticipants']);
-            fakeRepository.getParticipants.andReturn(pList);            
+            fakeRenderer.statusChangedEventHandler = jasmine.createSpy('rendererStatusChangedEventHandler');
+            
 
             pbp = parkBenchPanel(fakeRepository, fakeRenderer);
+            
+            fakeRenderer.statusChangedEventHandler.reset();
 
             //Act
             pbp.init();
 
         });
 
-        it("then the current list of participants should be loaded", function() {
-            expect(fakeRepository.getParticipants).toHaveBeenCalled();
+        it("then status of only the local participant should be initialised to 'listener'", function() {
+            expect(fakeGoogleApi.hangout.data.setValue.callCount).toEqual(1);
+            expect(fakeGoogleApi.hangout.data.setValue.calls[0].args[0]).toEqual(pList[localParticipantId - 1].getId());
+            expect(fakeGoogleApi.hangout.data.setValue.calls[0].args[1]).toEqual('listener');
         });
-        it("then subscribers should be notified", function() {
-            expect(participantStatusChangedEventHandler.callCount).toEqual(3);
+        it("then the renderer should have been instructed to add all participants", function() {
+            expect(fakeRenderer.statusChangedEventHandler.callCount).toEqual(3);
         });
     });
 
@@ -464,62 +508,88 @@ describe("A Park Bench Panel", function() {
 
         describe("given there are currently no speakers", function() {
             
-            var pList = [], statusChangedEventHandler;
+            var pList = [], statusChangedEventHandler, localParticipantId = 3, fakeGoogleApi;
             
             beforeEach(function() {
+                     
+                //Arrange
+                var result = getPbpParticipants2( { 
+                    namelist: 'Bob,Fred,Bill',
+                    status: 'listener',
+                    localParticipantId: localParticipantId,
+                    localParticipantStatus: 'listener'
+
+                }) ;
+                pList = result.pList;
+                fakeGoogleApi = result.fakeGoogleApi;
                             
-                statusChangedEventHandler = jasmine.createSpy('statusChangedEventHandler');
-                pList = getPbpParticipants( { nameList: 'Bob,Fred,Bill', statusChangedEventHandlers : [ statusChangedEventHandler ] } );
-                
                 fakeRenderer = jasmine.createSpyObj('renderer', ['statusChangedEventHandler', 'add', 'move']);
-                fakeRepository = jasmine.createSpyObj('repo', ['statusChangedEventHandler', 'getParticipants']);
-                fakeRepository.getParticipants.andReturn(pList);            
+                fakeRepository = jasmine.createSpyObj('repo', ['statusChangedEventHandler','getLocalParticipant', 'getParticipants']);
+                fakeRepository.getParticipants.andReturn(pList);
+                fakeRepository.getLocalParticipant.andReturn(pList[localParticipantId - 1]);            
+
 
                 pbp = parkBenchPanel(fakeRepository, fakeRenderer);
                 pbp.init();
+                fakeRenderer.statusChangedEventHandler.reset();
+
+                //Act
                 pbp.gotSomethingToSay('Bill');
             });
             
             it("then my status should be set to speaker", function() {
-                expect(pList[2].getStatus()).toEqual('speaker');
+                expect(pList[localParticipantId - 1].getStatus()).toEqual('speaker');
+                expect(fakeGoogleApi.hangout.data.setValue.callCount).toEqual(1);
+                expect(fakeGoogleApi.hangout.data.setValue.calls[0].args[0]).toEqual(pList[localParticipantId - 1].getId());
+                expect(fakeGoogleApi.hangout.data.setValue.calls[0].args[1]).toEqual('speaker');
             });
-            it("then any subscribers should have been notified.", function() {
-                expect(statusChangedEventHandler).toHaveBeenCalledWith({
-                    id: pList[2].getId(),
-                    name: pList[2].getName(),
+            it("then the renderer should have been instructed update my status", function() {
+                expect(fakeRenderer.statusChangedEventHandler.callCount).toEqual(1);
+                expect(fakeRenderer.statusChangedEventHandler).toHaveBeenCalledWith({
+                    participant: pList[localParticipantId - 1],
                     lastStatus: 'listener',
-                    currentStatus: 'speaker'
                 });
             });
         });
         
-        describe("given there are currently 3 speakers", function() {
+        describe("given there are currently 3 speakers and the local participant wants to talk", function() {
+            
+            var pList = [], fakeGoogleApi, localParticipantId = 4;
             
             beforeEach(function() {
 
-                statusChangedEventHandler = jasmine.createSpy('statusChangedEventHandler');
-                pList = getPbpParticipants( { nameList: 'Bob,Fred,Bill,Joe', statusChangedEventHandlers : [ statusChangedEventHandler ] } );
+                //Arrange
+                var result = getPbpParticipants2( { 
+                    namelist: 'Bob,Fred,Bill,Joe',
+                    status: 'speaker',
+                    localParticipantId: localParticipantId,
+                    localParticipantStatus: 'listener'
+
+                }) ;
+                pList = result.pList;
+                fakeGoogleApi = result.fakeGoogleApi;
                 
                 fakeRenderer = jasmine.createSpyObj('renderer', ['statusChangedEventHandler', 'add', 'move']);
-                fakeRepository = jasmine.createSpyObj('repo', ['statusChangedEventHandler', 'getParticipants']);
+                fakeRepository = jasmine.createSpyObj('repo', ['statusChangedEventHandler','getLocalParticipant', 'getParticipants']);
                 fakeRepository.getParticipants.andReturn(pList);            
+                fakeRepository.getLocalParticipant.andReturn(pList[localParticipantId - 1]);
 
                 pbp = parkBenchPanel(fakeRepository, fakeRenderer);
                 pbp.init();
-                pbp.gotSomethingToSay('Bob');
-                pbp.gotSomethingToSay('Fred');
-                pbp.gotSomethingToSay('Bill');
-                pbp.gotSomethingToSay('Joe');
+                fakeRenderer.statusChangedEventHandler.reset();
+
+                
+                //Act
+                pbp.gotSomethingToSay('Joe'); //Todo: use getlocalparticipant rather than pass name in
             });
             it("then the listener status should be set to waiting", function() {
-                expect(pList[3].getStatus()).toEqual('waiting');
+                expect(pList[localParticipantId - 1].getStatus()).toEqual('waiting');
             });
             it("then the renderer should update the display", function() {
-                expect(statusChangedEventHandler).toHaveBeenCalledWith({
-                    id: pList[3].getId(),
-                    name: pList[3].getName(),
+                expect(fakeRenderer.statusChangedEventHandler.callCount).toEqual(1);
+                expect(fakeRenderer.statusChangedEventHandler).toHaveBeenCalledWith({
+                    participant: pList[localParticipantId - 1],
                     lastStatus: 'listener',
-                    currentStatus: 'waiting'
                 });
             });
         });
@@ -528,26 +598,34 @@ describe("A Park Bench Panel", function() {
     
     describe("when I am a speaker and I request to stop speaking", function() {
 
-        var pList = [], statusChangedEventHandler;
+        var pList = [], fakeGoogleApi, localParticipantId = 3;
         
         beforeEach(function() {
         
-            statusChangedEventHandler = jasmine.createSpy('statusChangedEventHandler');
-    
-            pList = getPbpParticipants( { nameList: 'Bob,Joe', status : 'listener', statusChangedEventHandlers : [ statusChangedEventHandler ] } );
-            pList = pList.concat( getPbpParticipants( { nameList: 'Fred,Bill', status : 'speaker', statusChangedEventHandlers : [ statusChangedEventHandler ] } ) );
-            
-            fakeRenderer = jasmine.createSpyObj('renderer', ['statusChangedEventHandler', 'add', 'move']);
-            fakeRepository = jasmine.createSpyObj('repo', ['statusChangedEventHandler', 'getParticipants']);
-            fakeRepository.getParticipants.andReturn(pList);            
+                //Arrange
+                var result = getPbpParticipants2( { 
+                    namelist: 'Bob,Fred,Bill',
+                    status: 'speaker',
+                    localParticipantId: localParticipantId,
+                    localParticipantStatus: 'speaker'
 
-            pbp = parkBenchPanel(fakeRepository, fakeRenderer);
-            pbp.init();
+                }) ;
+                pList = result.pList;
+                fakeGoogleApi = result.fakeGoogleApi;
+                
+                fakeRenderer = jasmine.createSpyObj('renderer', ['statusChangedEventHandler', 'add', 'move']);
+                fakeRepository = jasmine.createSpyObj('repo', ['statusChangedEventHandler','getLocalParticipant', 'getParticipants']);
+                fakeRepository.getParticipants.andReturn(pList);            
+                fakeRepository.getLocalParticipant.andReturn(pList[localParticipantId - 1]);
+
+                pbp = parkBenchPanel(fakeRepository, fakeRenderer);
+                pbp.init();
+                fakeRenderer.statusChangedEventHandler.reset();
         });
         
         it("then my status should be set to listener", function() {
             pbp.doneTalkin('Bill');
-            expect(pList[3].getStatus()).toEqual('listener');
+            expect(pList[localParticipantId - 1].getStatus()).toEqual('listener');
         });
 
         describe("given there is a waiting participant", function() {
@@ -569,24 +647,33 @@ describe("A Park Bench Panel", function() {
 
     describe("when a new participant joins", function() {
 
-        var pbpParticipants, newPbpParticipants;
+        var pList, newPbpParticipants, fakeGoogleApi, localParticipantId = 2;
         
         beforeEach(function() {            
             
-            pbpParticipants = getPbpParticipants( { nameList: 'Bob,Fred' } );
-            
-            fakeRenderer = jasmine.createSpyObj('renderer', ['statusChangedEventHandler', 'add', 'move']);
-            fakeRenderer.statusChangedEventHandler = jasmine.createSpy('statusChangedEventHandler');
-            
-            fakeRepository = jasmine.createSpyObj('repo', ['statusChangedEventHandler', 'getParticipants']);
-            fakeRepository.getParticipants.andReturn(pbpParticipants);
-        
-            pbp = parkBenchPanel(fakeRepository, fakeRenderer);
-            pbp.init();
-            fakeRenderer.statusChangedEventHandler.reset();
+                //Arrange
+                var result = getPbpParticipants2( { 
+                    namelist: 'Bob,Fred,Bill',
+                    status: 'listener',
+                    localParticipantId: localParticipantId,
+                    localParticipantStatus: 'listener'
+
+                }) ;
+                pList = result.pList.slice(0,2);
+                fakeGoogleApi = result.fakeGoogleApi;
+                
+                fakeRenderer = jasmine.createSpyObj('renderer', ['statusChangedEventHandler', 'add', 'move']);
+                fakeRepository = jasmine.createSpyObj('repo', ['statusChangedEventHandler','getLocalParticipant', 'getParticipants']);
+                fakeRepository.getParticipants.andReturn(pList);            
+                fakeRepository.getLocalParticipant.andReturn(pList[localParticipantId - 1]);
+
+                pbp = parkBenchPanel(fakeRepository, fakeRenderer);
+                pbp.init();
+                fakeRenderer.statusChangedEventHandler.reset();
             
             //Act
-            newPbpParticipants = getPbpParticipants( { nameList: 'Bill' } );
+            newPbpParticipants = result.pList.slice(2,3);
+            newPbpParticipants[0].setStatus(undefined);
             pbp.newParticipantsJoined(newPbpParticipants);
         });
         it("then the new participant is added to the park bench panel", function() {
@@ -597,9 +684,56 @@ describe("A Park Bench Panel", function() {
         });
         it("then the renderer should notified of a new participant event", function() {
             expect(fakeRenderer.statusChangedEventHandler.callCount).toEqual(1);
-            expect(fakeRenderer.statusChangedEventHandler.calls[0].args[0].name).toEqual('Bill');
-            expect(fakeRenderer.statusChangedEventHandler.calls[0].args[0].currentStatus).toEqual('listener');
+            expect(fakeRenderer.statusChangedEventHandler.calls[0].args[0].participant.getName()).toEqual('Bill');
+            expect(fakeRenderer.statusChangedEventHandler.calls[0].args[0].participant.getStatus()).toEqual('listener');
             expect(fakeRenderer.statusChangedEventHandler.calls[0].args[0].lastStatus).toBeUndefined();
+        });
+        
+    });
+    
+    describe("when a participant leaves", function() {
+        
+        var pList, fakeGoogleApi, localParticipantId = 3;
+        
+        beforeEach(function() {            
+            
+            //Arrange
+            var result = getPbpParticipants2( { 
+                namelist: 'Bob,Fred,Bill',
+                status: 'listener',
+                localParticipantId: localParticipantId,
+                localParticipantStatus: 'listener'
+
+            }) ;
+            pList = result.pList;
+            fakeGoogleApi = result.fakeGoogleApi;
+            
+            fakeRenderer = jasmine.createSpyObj('renderer', ['statusChangedEventHandler', 'add', 'move']);
+            fakeRepository = jasmine.createSpyObj('repo', ['statusChangedEventHandler','getLocalParticipant', 'getParticipants']);
+            fakeRepository.getParticipants.andReturn(pList);            
+            fakeRepository.getLocalParticipant.andReturn(pList[localParticipantId - 1]);
+
+            pbp = parkBenchPanel(fakeRepository, fakeRenderer);
+            pbp.init();
+            fakeRenderer.statusChangedEventHandler.reset();
+            
+            //Act
+            pbp.participantLeaves(pList[localParticipantId - 1]);
+        });
+        
+        it("then the participant is removed from the park bench panel", function() {
+            expect(pbp.getParticipants().length).toEqual(2);
+        });
+        it("then subscribers should be notified", function() {
+            expect(fakeGoogleApi.hangout.data.setValue.callCount).toEqual(1);
+            expect(fakeGoogleApi.hangout.data.setValue.calls[0].args[0]).toEqual(pList[localParticipantId - 1].getId());
+            expect(fakeGoogleApi.hangout.data.setValue.calls[0].args[1]).toBeUndefined();
+        });
+        it("then the renderer should notified of a new participant event", function() {
+            expect(fakeRenderer.statusChangedEventHandler.callCount).toEqual(1);
+            expect(fakeRenderer.statusChangedEventHandler.calls[0].args[0].participant.getName()).toEqual('Bill');
+            expect(fakeRenderer.statusChangedEventHandler.calls[0].args[0].participant.getStatus()).toBeUndefined();
+            expect(fakeRenderer.statusChangedEventHandler.calls[0].args[0].lastStatus).toEqual('listener');
         });
         
     });
@@ -612,7 +746,7 @@ describe("A Park Bench Panel", function() {
             var participantAddedEvent;
             var stateChangedHandlerSpy;
             var googleParticipants;
-            var stateList = { '2': 'speaker' };
+            var stateList = { '2': 'listener' };
             
             beforeEach(function() {
 
@@ -659,7 +793,7 @@ describe("A Park Bench Panel", function() {
                 
                 beforeEach(function() {
                     participantEventHandlerSpy(participantAddedEvent);
-                })
+                });
 
                 it("then the new participant is added to the park bench panel", function() {
                     expect(pbp.getParticipants().length).toEqual(2);
@@ -667,8 +801,8 @@ describe("A Park Bench Panel", function() {
 
                 it("and the event is passed on to subscribers to the pbp new participant event.", function() {
                     expect(fakeRenderer.statusChangedEventHandler.callCount).toEqual(1);
-                    expect(fakeRenderer.statusChangedEventHandler.calls[0].args[0].name).toEqual('Bob');
-                    expect(fakeRenderer.statusChangedEventHandler.calls[0].args[0].currentStatus).toEqual('listener');
+                    expect(fakeRenderer.statusChangedEventHandler.calls[0].args[0].participant.getName()).toEqual('Bob');
+                    expect(fakeRenderer.statusChangedEventHandler.calls[0].args[0].participant.getStatus()).toEqual('listener');
                     expect(fakeRenderer.statusChangedEventHandler.calls[0].args[0].lastStatus).toBeUndefined();
                 });
                             
@@ -686,7 +820,7 @@ describe("A Park Bench Panel", function() {
                 
                 it("and the event is passed on to subscribers of the pbp participant updated event.", function() {
                     expect(fakeRenderer.statusChangedEventHandler.callCount).toEqual(1);
-                    expect(fakeRenderer.statusChangedEventHandler.calls[0].args[0].name).toEqual('Fred');
+                    expect(fakeRenderer.statusChangedEventHandler.calls[0].args[0].participant.getName()).toEqual('Fred');
                 });
 
                             

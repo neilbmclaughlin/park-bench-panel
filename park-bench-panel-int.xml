@@ -12,24 +12,25 @@
     <!--  Note must use full closing tags. google app parser will not parse html correctly without them-->
     
     <head>
-      <title>* Park Bench Panel *</title>
-      <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.0/themes/start/jquery-ui.css"></link>
-      <!-- The hangout ref needs to change to this once it moves out of developer sandbox
-      <script src="//talkgadget.google.com/hangouts/_/api/hangout.js?v=1.2"></script> 
-      -->
-      <script src="https://hangoutsapi.talkgadget.google.com/hangouts/api/hangout.js?v=1.3" ></script>
-      <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-      <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
-      <!--PBP SCRIPT BLOCK START-->
+        <title>* Park Bench Panel *</title>
+        <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.0/themes/start/jquery-ui.css"></link>
+        <!-- The hangout ref needs to change to this once it moves out
+        of developer sandbox <script src="//talkgadget.google.com/hangouts/_/api/hangout.js?v=1.2"></script> 
+          -->
+        <script src="https://hangoutsapi.talkgadget.google.com/hangouts/api/hangout.js?v=1.3"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+        <!--//PBP SCRIPT BLOCK-->
 <link rel="stylesheet" type="text/css" href="http://neilbmclaughlin.github.io/park-bench-panel/Content/park-bench-panel.css"></link>
 <script src="http://neilbmclaughlin.github.io/park-bench-panel/hangout-wrapper.js"></script>
 <script src="http://neilbmclaughlin.github.io/park-bench-panel/park-bench-panel.js"></script>
 <script src="http://neilbmclaughlin.github.io/park-bench-panel/park-bench-panel-init.js"></script>
-      <!--PBP SCRIPT BLOCK END-->
     </head>
-
+        
     <body>
         <div  width="75%">
+        
+            <h1>Park Bench Panel</h1>
     
             <h1>Listeners</h1>
             <ul id="listenerList"></ul>

@@ -1,13 +1,6 @@
 var getFakeHangout = function() {
 
-    var stateList = {
-         '1' : 'listener',
-         '2' : 'listener',
-         '3' : 'listener',
-         '4' : 'listener',
-         '5' : 'listener',
-         '6' : 'listener'
-    };
+    var stateList = [];
     
     var getParticipants = function() {
         return [
@@ -65,7 +58,7 @@ var getFakeHangout = function() {
                 return stateList[key];
             },
             setValue: function(key, value) {
-                return stateList[key] = value;
+                stateList[key] = value;
             },
         },
         getLocalParticipant : function() {

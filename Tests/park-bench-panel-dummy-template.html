@@ -1,0 +1,58 @@
+<html>
+
+    <!--  Note must use full closing tags. google app parser will not parse html correctly without them-->
+    
+    <head>
+      <title>Park Bench Panel - Test Rig</title>
+      <!-- The hangout ref needs to change to this once it moves out of developer sandbox
+      <script src="//talkgadget.google.com/hangouts/_/api/hangout.js?v=1.2"></script> 
+      -->
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://c9.io/neilbmclaughlin/park-bench-panel/workspace/Content/park-bench-panel.css"></link>
+
+    <script>
+      //PBP SCRIPT BLOCK
+        
+    </script>
+    </head>
+
+    <body>
+        <div  width="75%">
+    
+            <h1>Listeners</h1>
+            <ul id="listenerList"></ul>
+            
+            <h1>Waiting to speak</h1>
+            <ul id="waitingList"></ul>
+
+            <h1>Speakers (Limit : 3)</h1>
+            <ul id="speakerList"></ul>
+
+            <div id="buttons">
+                <input class="button" type="button" value="I want to talk" id="btnStartTalk" onClick="startTalk()"></input>
+                <input class="button" type="button" value="I'm done talking" id="btnStopTalk" onClick="stopTalk()"></input>            
+            </div>
+            
+            <hr/>
+
+            <div>
+                <label for="localParticipantSelect">Current local participant</label>
+                <select id="localParticipantSelect" onchange="gapi.hangout.participantSelectChanged();"></select>
+            </div>
+
+            <div>
+                <label for="displayName">Name</label>
+                <input class="text" type="text" id="displayName">
+                <input class="button" type="button" value="Add new participant" id="btnAddParticipant" onClick="gapi.hangout.addTestParticipant()"></input>
+            </div>
+            
+            <div>
+            </div>
+
+
+        </div>
+
+    </body>
+
+</html>
