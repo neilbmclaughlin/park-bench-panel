@@ -83,19 +83,19 @@ var participant = function(spec) {
     return that;
 };
 
-var participantMapper = function(gapi) {
+var participantMapper = function(hangoutWrapper, localParticipantId) {
 
     return function(googleParticipant) {
         
         var repositoryUpdatehandler = function(updateDetails) {
-            gapi.hangout.data.setValue(updateDetails.participant.getId(), updateDetails.participant.getStatus());
+            hangoutWrapper.setStatus(updateDetails.participant.getId(), updateDetails.participant.getStatus());
         };
 
         return participant({
             id: googleParticipant.person.id,
             name: googleParticipant.person.displayName,
-            status: gapi.hangout.data.getValue(googleParticipant.person.id),
-            local: gapi.hangout.getLocalParticipant().person.id == googleParticipant.person.id,
+            status: hangoutWrapper.getStatus(googleParticipant.person.id),
+            local: googleParticipant.person.id == localParticipantId,
             statusChangedEventHandlers: [ repositoryUpdatehandler ],
         });
     };
@@ -103,40 +103,48 @@ var participantMapper = function(gapi) {
 
 var hangoutWrapper = function(gapi) {
 
-    var getWrappedHandler = function(f) {
+    var that = {};
+    var localParticipantId = gapi.hangout.getLocalParticipant().person.id;
+    var mapper = participantMapper(that, localParticipantId);
+
+    var getWrappedHandler = function(f, mapper) {
         return function(newParticipantEvent) {
-            var mapper = participantMapper(gapi);
             var pbpParticipants = $.map(newParticipantEvent.addedParticipants, mapper);
             f(pbpParticipants);
         };
     };
 
     var setup = function(newParticipantsJoinedHandler, stateChanged, init) {
-        gapi.hangout.onParticipantsAdded.add(getWrappedHandler(newParticipantsJoinedHandler));
+        gapi.hangout.onParticipantsAdded.add(getWrappedHandler(newParticipantsJoinedHandler, mapper));
         gapi.hangout.data.onStateChanged.add(stateChanged);
         init();
     };
-    
-    return {
-        start: function(newParticipantsJoined, stateChanged, init) {
-            if (gapi.hangout.isApiReady()) {
+
+    that.start = function(newParticipantsJoined, stateChanged, init) {
+        if (gapi.hangout.isApiReady()) {
+            setup(newParticipantsJoined, stateChanged, init);
+        }
+        else {
+            var f = function() {
                 setup(newParticipantsJoined, stateChanged, init);
-            }
-            else {
-                var f = function() {
-                    setup(newParticipantsJoined, stateChanged, init);
-                };
-                gapi.hangout.onApiReady.add(f);
-            }
-        },
-        getParticipants: function(statusChangedEventHandlers) {
-            return $.map(gapi.hangout.getParticipants(), participantMapper(gapi));
-        },
-        getLocalParticipant: function() {
-            var mapper = participantMapper(gapi);
-            return mapper(gapi.hangout.getLocalParticipant());
-        },
+            };
+            gapi.hangout.onApiReady.add(f);
+        }
     };
+    that.getParticipants = function(statusChangedEventHandlers) {
+        return $.map(gapi.hangout.getParticipants(), mapper);
+    };
+    that.getLocalParticipant = function() {
+        return mapper(gapi.hangout.getLocalParticipant());
+    };
+    that.setStatus = function(participantId, status) {
+        gapi.hangout.data.setValue(participantId, status);
+    };
+    that.getStatus = function(participantId) {
+        return gapi.hangout.data.getValue(participantId);
+    };
+
+    return that;
 };
 
 var renderer = function() {
