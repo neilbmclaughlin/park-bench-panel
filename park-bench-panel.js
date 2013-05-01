@@ -114,13 +114,6 @@ var hangoutWrapper = function(gapi) {
         };
     };
 
-    var getWrappedRemovedHandler = function(f, mapper) {
-        return function(newParticipantEvent) {
-            var pbpParticipants = $.map(newParticipantEvent.removedParticipants, mapper);
-            f(pbpParticipants);
-        };
-    };
-
     var setup = function(participantsJoinedHandler, participantsLeftHandler, statusChangedHandler, init) {
         gapi.hangout.onParticipantsAdded.add(getWrappedHandler(participantsJoinedHandler, mapper, 'addedParticipants'));
         gapi.hangout.onParticipantsRemoved.add(getWrappedHandler(participantsLeftHandler, mapper, 'removedParticipants'));
