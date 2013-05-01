@@ -107,26 +107,34 @@ var hangoutWrapper = function(gapi) {
     var localParticipantId = gapi.hangout.getLocalParticipant().person.id;
     var mapper = participantMapper(that, localParticipantId);
 
-    var getWrappedHandler = function(f, mapper) {
-        return function(newParticipantEvent) {
-            var pbpParticipants = $.map(newParticipantEvent.addedParticipants, mapper);
+    var getWrappedHandler = function(f, mapper, propertyName) {
+        return function(participantEvent) {
+            var pbpParticipants = $.map(participantEvent[propertyName], mapper);
             f(pbpParticipants);
         };
     };
 
-    var setup = function(newParticipantsJoinedHandler, stateChanged, init) {
-        gapi.hangout.onParticipantsAdded.add(getWrappedHandler(newParticipantsJoinedHandler, mapper));
-        gapi.hangout.data.onStateChanged.add(stateChanged);
+    var getWrappedRemovedHandler = function(f, mapper) {
+        return function(newParticipantEvent) {
+            var pbpParticipants = $.map(newParticipantEvent.removedParticipants, mapper);
+            f(pbpParticipants);
+        };
+    };
+
+    var setup = function(participantsJoinedHandler, participantsLeftHandler, statusChangedHandler, init) {
+        gapi.hangout.onParticipantsAdded.add(getWrappedHandler(participantsJoinedHandler, mapper, 'addedParticipants'));
+        gapi.hangout.onParticipantsRemoved.add(getWrappedHandler(participantsLeftHandler, mapper, 'removedParticipants'));
+        gapi.hangout.data.onStateChanged.add(statusChangedHandler);
         init();
     };
 
-    that.start = function(newParticipantsJoined, stateChanged, init) {
+    that.start = function(participantsAddedHandler, participantsLeftHandler, statusChangedHandler, init) {
         if (gapi.hangout.isApiReady()) {
-            setup(newParticipantsJoined, stateChanged, init);
+            setup(participantsAddedHandler, participantsLeftHandler, statusChangedHandler, init);
         }
         else {
             var f = function() {
-                setup(newParticipantsJoined, stateChanged, init);
+                setup(participantsAddedHandler, participantsLeftHandler, statusChangedHandler, init);
             };
             gapi.hangout.onApiReady.add(f);
         }
@@ -340,7 +348,7 @@ var parkBenchPanel = function(repo, renderer) {
             });
         },
         start: function() {
-            repo.start(this.newParticipantsJoined, this.otherParticipantsChangedStatus, this.init);
+            repo.start(this.newParticipantsJoined, this.participantLeaves, this.otherParticipantsChangedStatus, this.init);
         }
     };
 };

@@ -198,10 +198,9 @@ describe("A Park Bench Panel", function() {
         });
     });
 
-
     describe("when a new participant joins", function() {
 
-        var pList, newPbpParticipants, fakeHangout, localParticipantId = 2;
+        var pList, newPbpParticipants, localParticipantId = 2;
 
         beforeEach(function() {
 
@@ -282,113 +281,11 @@ describe("A Park Bench Panel", function() {
             expect(fakeHangout.setStatus.calls[0].args[0]).toEqual(pList[localParticipantId - 1].getId());
             expect(fakeHangout.setStatus.calls[0].args[1]).toBeUndefined();
         });
-        it("then the renderer should notified of a new participant event", function() {
+        it("then the renderer should notified of a participant left event", function() {
             expect(fakeRenderer.statusChangedEventHandler.callCount).toEqual(1);
             expect(fakeRenderer.statusChangedEventHandler.calls[0].args[0].participant.getName()).toEqual('Bill');
             expect(fakeRenderer.statusChangedEventHandler.calls[0].args[0].participant.getStatus()).toBeUndefined();
             expect(fakeRenderer.statusChangedEventHandler.calls[0].args[0].lastStatus).toEqual('listener');
         });
-
-    });
-
-    describe("Integration Event Tests", function() {
-
-        describe("Hangout raising events", function() {
-
-            var participantEventHandlerSpy;
-            var participantAddedEvent;
-            var stateChangedHandlerSpy;
-            var googleParticipants;
-            var stateList = {
-                '2': 'listener'
-            };
-
-            beforeEach(function() {
-
-                googleParticipants = getGoogleParticipants('Bob,Fred');
-
-                participantAddedEvent = {
-                    addedParticipants: [googleParticipants[0]]
-                };
-
-                fakeRenderer = jasmine.createSpyObj('renderer', ['statusChangedEventHandler', 'add', 'move']);
-
-                //Arrange
-                fakeGoogleHangout = {
-                    isApiReady: jasmine.createSpy('isApiReady').andReturn(true),
-                    getParticipants: jasmine.createSpy('getParticipants').andReturn([googleParticipants[1]]),
-                    onParticipantsAdded: {
-                        add: function(f) {
-                            participantEventHandlerSpy = f;
-                        }
-                    },
-                    data: {
-                        onStateChanged: {
-                            add: function(f) {
-                                stateChangedHandlerSpy = f;
-                            }
-                        },
-                        getValue: jasmine.createSpy('getValue').andCallFake(function(value) {
-                            return stateList[value];
-                        }),
-                        setValue: jasmine.createSpy('setValue'),
-                    },
-                    getLocalParticipant: jasmine.createSpy('getLocalParticipant').andReturn(googleParticipants[0]),
-                };
-                hangout = hangoutWrapper({
-                    hangout: fakeGoogleHangout
-                });
-                pbp = parkBenchPanel(hangout, fakeRenderer);
-                pbp.start();
-                fakeRenderer.statusChangedEventHandler.reset();
-
-                //Act - hangout raises new participant event 
-
-            });
-
-            describe("raising a new participant event", function() {
-
-                beforeEach(function() {
-                    participantEventHandlerSpy(participantAddedEvent);
-                });
-
-                it("then the new participant is added to the park bench panel", function() {
-                    expect(pbp.getParticipants().length).toEqual(2);
-                });
-
-                it("and the event is passed on to subscribers to the pbp new participant event.", function() {
-                    expect(fakeRenderer.statusChangedEventHandler.callCount).toEqual(1);
-                    expect(fakeRenderer.statusChangedEventHandler.calls[0].args[0].participant.getName()).toEqual('Bob');
-                    expect(fakeRenderer.statusChangedEventHandler.calls[0].args[0].participant.getStatus()).toEqual('listener');
-                    expect(fakeRenderer.statusChangedEventHandler.calls[0].args[0].lastStatus).toBeUndefined();
-                });
-
-            });
-
-            describe("raising a new state changed event", function() {
-
-                beforeEach(function() {
-                    stateChangedHandlerSpy({
-                        state: {
-                            '2': 'speaker'
-                        }
-                    });
-                });
-
-                it("then the status of the participant is updated", function() {
-                    expect(pbp.getParticipants()[0].getStatus()).toEqual('speaker');
-                });
-
-                it("and the event is passed on to subscribers of the pbp participant updated event.", function() {
-                    expect(fakeRenderer.statusChangedEventHandler.callCount).toEqual(1);
-                    expect(fakeRenderer.statusChangedEventHandler.calls[0].args[0].participant.getName()).toEqual('Fred');
-                });
-
-
-            });
-
-
-        });
-
     });
 });
