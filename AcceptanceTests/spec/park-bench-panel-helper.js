@@ -1,11 +1,7 @@
 var getPbpParticipants = function(spec) {
     
     var googleParticipants = getGoogleParticipants(spec.namelist);
-    var fakeHangout = {
-        setStatus:  jasmine.createSpy('setStatus'),
-        getStatus:  jasmine.createSpy('getStatus').andReturn('listener'),
-    };
-    var mapper = participantMapper(fakeHangout, spec.localParticipantId);
+    var mapper = participantMapper(spec.fakeRepository, spec.localParticipantId);
 
     var pList = $.map(googleParticipants, mapper);
                         
@@ -15,10 +11,10 @@ var getPbpParticipants = function(spec) {
         }
     });
     pList[spec.localParticipantId - 1].setStatus(spec.localParticipantStatus);
-    fakeHangout.setStatus.reset();
-    fakeHangout.getStatus.reset();
+    spec.fakeRepository.setStatus.reset();
+    spec.fakeRepository.getStatus.reset();
     
-    return { pList : pList, fakeHangout: fakeHangout};
+    return pList;
 };
 
 var getGoogleParticipants = function(nameList) {

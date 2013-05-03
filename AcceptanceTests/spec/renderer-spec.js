@@ -117,7 +117,7 @@ describe("A list renderer", function() {
     });
 
 
-    it("Can remove an entry from a list", function() {
+    it("Can remove an entry from a specified list", function() {
 
         var p1 = participant( { id: 1, name: 'Bob', status: 'listener', local: true } );
         r.add(p1);
@@ -128,7 +128,20 @@ describe("A list renderer", function() {
 
         //assert
         expect(GetListItems("listenerList").length).toEqual(0);
-        //expect(GetListItems("listenerList")[0].innerHTML).toEqual("Fred");
+
+    });
+
+    it("Can remove an entry from the participants current status list", function() {
+
+        var p1 = participant( { id: 1, name: 'Bob', status: 'listener', local: true } );
+        r.add(p1);
+        
+
+        //act
+        r.remove(p1);
+
+        //assert
+        expect(GetListItems("listenerList").length).toEqual(0);
 
     });
 

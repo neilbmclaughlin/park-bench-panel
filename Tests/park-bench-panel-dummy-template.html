@@ -11,10 +11,7 @@
         <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
         <link rel="stylesheet" type="text/css" href="https://c9.io/neilbmclaughlin/park-bench-panel/workspace/Content/park-bench-panel.css"></link>
 
-    <script>
-      //PBP SCRIPT BLOCK
-        
-    </script>
+        <!--//PBP SCRIPT BLOCK-->
     </head>
 
     <body>
@@ -39,6 +36,7 @@
             <div>
                 <label for="localParticipantSelect">Current local participant</label>
                 <select id="localParticipantSelect" onchange="gapi.hangout.participantSelectChanged();"></select>
+                <input class="button" type="button" value="Remove current participant" id="btnRemoveParticipant" onClick="gapi.hangout.removeTestParticipant()"></input>
             </div>
 
             <div>

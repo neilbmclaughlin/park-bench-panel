@@ -1,6 +1,12 @@
 var getFakeHangout = function() {
 
-    var stateList = [];
+    var stateList = {
+        1: undefined,
+        2 : 'listener',
+        3 : 'listener',
+        4 : 'listener',
+        5 : 'listener',
+    };
     
     var getParticipants = function() {
         return [
@@ -8,7 +14,7 @@ var getFakeHangout = function() {
                 person: {
                     id: '1',
                     displayName: 'Bob',
-                },        
+                },
             }, {
                 person: {
                     id: '2',
@@ -32,7 +38,7 @@ var getFakeHangout = function() {
             }
         ];        
     };
-    var participantEventHandlerSpy, stateChangedHandlerSpy;
+    var participantAddedEventHandlerSpy, participantRemovedEventHandlerSpy, stateChangedHandlerSpy;
     var participants;
     
     var localParticipant = getParticipants()[0]; 
@@ -45,7 +51,12 @@ var getFakeHangout = function() {
         },
         onParticipantsAdded: {
             add: function(f) {
-                participantEventHandlerSpy = f;
+                participantAddedEventHandlerSpy = f;
+            }
+        },
+        onParticipantsRemoved: {
+            add: function(f) {
+                participantRemovedEventHandlerSpy = f;
             }
         },
         data: {
@@ -81,9 +92,15 @@ var getFakeHangout = function() {
               },
           };
           participants.push(p);
-          participantEventHandlerSpy( { addedParticipants : [p] });
-      },
-        
+          participantAddedEventHandlerSpy( { addedParticipants : [p] });
+        },
+        removeTestParticipant : function() {
+          participantRemovedEventHandlerSpy( { removedParticipants : [localParticipant] });
+          participants = jQuery.grep(participants, function(p){
+            return (p.person.id != localParticipant.id );
+        });
+        localParticipant = participants[0];
+        },        
     };
 };
 
@@ -108,7 +125,7 @@ var testingRenderer = function() {
 
     that.remove = function(participant, oldStatus) {
         super_remove(participant, oldStatus);
-        $('#localParticipantSelect option[value=' + participant.getId() + ']').remove();;
+        $('#localParticipantSelect option[value=' + participant.getId() + ']').remove();
     };
 
     that.move = function(participant, oldStatus) {

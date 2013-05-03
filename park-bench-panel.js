@@ -13,13 +13,6 @@ Function.prototype.method = function(name, func) {
     return this;
 };
 
-// Object.method('superior', function (name) {
-//     //var that = this, method = that[name];
-//     return function () {
-//         return null; //method.apply(that, arguments);
-//     };
-// });
-
 if (!Array.prototype.last) {
     Array.prototype.last = function() {
         return this[this.length - 1];
@@ -31,9 +24,6 @@ if (!Array.prototype.first) {
         return this[0];
     };
 }
-
-
-
 
 var participant = function(spec) {
 
@@ -84,7 +74,7 @@ var participant = function(spec) {
 };
 
 var participantMapper = function(hangoutWrapper, localParticipantId) {
-
+    
     return function(googleParticipant) {
         
         var repositoryUpdatehandler = function(updateDetails) {
@@ -104,8 +94,7 @@ var participantMapper = function(hangoutWrapper, localParticipantId) {
 var hangoutWrapper = function(gapi) {
 
     var that = {};
-    var localParticipantId = gapi.hangout.getLocalParticipant().person.id;
-    var mapper = participantMapper(that, localParticipantId);
+    var localParticipant, mapper;
 
     var getWrappedHandler = function(f, mapper, propertyName) {
         return function(participantEvent) {
@@ -115,6 +104,9 @@ var hangoutWrapper = function(gapi) {
     };
 
     var setup = function(participantsJoinedHandler, participantsLeftHandler, statusChangedHandler, init) {
+        var googleLocalParticipant = gapi.hangout.getLocalParticipant();
+        mapper = participantMapper(that, googleLocalParticipant.person.id);
+        localParticipant = mapper(googleLocalParticipant);
         gapi.hangout.onParticipantsAdded.add(getWrappedHandler(participantsJoinedHandler, mapper, 'addedParticipants'));
         gapi.hangout.onParticipantsRemoved.add(getWrappedHandler(participantsLeftHandler, mapper, 'removedParticipants'));
         gapi.hangout.data.onStateChanged.add(statusChangedHandler);
@@ -136,13 +128,16 @@ var hangoutWrapper = function(gapi) {
         return $.map(gapi.hangout.getParticipants(), mapper);
     };
     that.getLocalParticipant = function() {
-        return mapper(gapi.hangout.getLocalParticipant());
+        return localParticipant;
     };
     that.setStatus = function(participantId, status) {
         gapi.hangout.data.setValue(participantId, status);
     };
     that.getStatus = function(participantId) {
         return gapi.hangout.data.getValue(participantId);
+    };
+    that.clearStatus = function(participantId) {
+        return gapi.hangout.data.clearValue(participantId);
     };
 
     return that;
@@ -162,7 +157,7 @@ var renderer = function() {
     };
         
     var remove = function(participant, oldStatus) {
-        var listName = '#' + oldStatus + 'List';
+        var listName = '#' + ( oldStatus || participant.getStatus() ) + 'List';
         var listItem = $(listName + ' li:contains("' + participant.getName() + '")');
         listItem.slideUp(500, 'linear', function () { $(this).remove();});
     }; 
@@ -298,8 +293,9 @@ var parkBenchPanel = function(repo, renderer) {
         init: function() {
             participants = participantRepo.getParticipants(); //Todo: pass the renderer event handler to get participants
             setParticipantsStatusChangedEventHandler(participants, [ participantRenderer.statusChangedEventHandler ] );
-            displayRemoteParticipants(participantRenderer.statusChangedEventHandler );
+            displayRemoteParticipants(participantRenderer.add);
             var localParticipant = participantRepo.getLocalParticipant();
+            participantRepo.clearStatus(localParticipant.getId());
             localParticipant.setStatus('listener');
         },
         gotSomethingToSay: function(localParticipantName) {
@@ -321,14 +317,18 @@ var parkBenchPanel = function(repo, renderer) {
         },
         newParticipantsJoined: function(newParticipants) {
             setParticipantsStatusChangedEventHandler(newParticipants, [ participantRenderer.statusChangedEventHandler ] );
-            setParticipantsStatus(newParticipants, 'listener');            
+            //setParticipantsStatus(newParticipants, 'listener');            
             $.each(newParticipants, function(i, p) {
+                participantRenderer.add(p);
                 participants.push(p);
             });
         },
-        participantLeaves: function(participant) {
-            participant.setStatus(undefined);
-            participants = $.grep(participants, function(p) { return p.getId() != participant.getId() } );
+        participantLeaves: function(removedParticipants) {
+            var removedIds = $.map(removedParticipants, function(p) { return p.getId(); } );
+            $.each(removedParticipants, function(i, p) {
+                participantRenderer.remove(p);
+            });
+            participants = $.grep(participants, function(p) { return $.inArray(p.getId(), removedIds) < 0 } );
         },
         
         otherParticipantsChangedStatus: function(stateChangedEvent) {
